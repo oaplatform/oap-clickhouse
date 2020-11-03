@@ -1,0 +1,12 @@
+name: oap-clickhouse
+
+services:
+  clickhouse-client:
+    implementation: oap.clickhouse.DefaultClickHouseClient
+    parameters:
+      host: localhost
+      port: 8123
+      charsetName: UTF-8
+
+      connectTimeout: 60s
+      timeout: 5m

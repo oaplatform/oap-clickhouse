@@ -1,0 +1,19 @@
+name: test-dictionary
+version: 1
+values:
+  - id: id1
+    title: title1
+    enabled: true
+    eid: 1
+  - id: kid3
+    enabled: true
+    eid: 3
+    tags: ["tag1", "tag2"]
+  - id: id2
+    title: title2
+    enabled: true
+    eid: 2
+  - id: did3$
+    enabled: true
+    eid: 4
+    tags: ["tag1", "tag2"]
