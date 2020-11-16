@@ -25,7 +25,7 @@
     </repositories>
 
     <properties>
-        <revision>8.0.0</revision>
+        <revision>8.1.0</revision>
 
         <oap.deps.oap.version>8.0.15</oap.deps.oap.version>
         <oap.deps.oap.logstream>5.0.0</oap.deps.oap.logstream>

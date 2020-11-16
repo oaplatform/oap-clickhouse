@@ -7,6 +7,7 @@ services:
       host: localhost
       port: 8123
       charsetName: UTF-8
+      chunkSize: 1mb
 
       connectTimeout: 60s
       timeout: 5m
