@@ -97,7 +97,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
 
     @Override
     public OutputStream put(String table, DataFormat format, long timeout) {
-        log.debug("put OutputStream into {}", table);
+        log.trace("put OutputStream into {}", table);
         return execute(new Query(getSubstitute(table, PUT, (v) ->
                 switch (v) {
                     case "FIELDS" -> "";
@@ -108,7 +108,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
 
     @Override
     public void deleteRows(String table, String where, boolean async, long timeout) {
-        log.debug("delete from {} WHERE {}", table, where);
+        log.trace("delete from {} WHERE {}", table, where);
 
         execute("ALTER TABLE " + table + " DELETE WHERE " + where, true, timeout);
 
@@ -187,7 +187,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     public int get(String query, Consumer<String> consumer, boolean useDatabase, long timeout) throws ClickHouseException {
         var cmd = getSubstitute(null, query, null);
 
-        log.debug("execute {}", cmd);
+        log.trace("execute {}", cmd);
 
         try (var stream = execute(new Query(cmd, false),
                 useDatabase ? database : null, timeout)) {
