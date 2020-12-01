@@ -28,7 +28,7 @@
 
     <packaging>pom</packaging>
     <artifactId>oap-clickhouse</artifactId>
-    <version>${revision}</version>
+    <version>${oap.project.clickhouse.version}</version>
 
     <parent>
         <groupId>oap</groupId>
@@ -49,7 +49,7 @@
     </repositories>
 
     <properties>
-        <revision>8.1.2</revision>
+        <oap.project.clickhouse.version>8.1.2</oap.project.clickhouse.version>
 
         <oap.deps.oap.version>8.2.6</oap.deps.oap.version>
         <oap.deps.oap.logstream>5.1.1</oap.deps.oap.logstream>

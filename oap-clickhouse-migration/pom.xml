@@ -33,7 +33,7 @@
     <parent>
         <groupId>oap</groupId>
         <artifactId>oap-clickhouse</artifactId>
-        <version>${revision}</version>
+        <version>${oap.project.clickhouse.version}</version>
     </parent>
 
 
