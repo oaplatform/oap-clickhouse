@@ -22,39 +22,16 @@
   ~ SOFTWARE.
   -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-    <packaging>pom</packaging>
-    <artifactId>oap-clickhouse</artifactId>
-    <version>${revision}</version>
+    <logger name="org" level="ERROR" additivity="false"/>
 
-    <parent>
-        <groupId>oap</groupId>
-        <artifactId>oap.maven</artifactId>
-        <version>2.0.0</version>
-    </parent>
-
-    <modules>
-        <module>oap-clickhouse-migration</module>
-        <module>oap-clickhouse-testing</module>
-    </modules>
-
-    <repositories>
-        <repository>
-            <id>oap</id>
-            <url>https://mvn.oaplatform.org</url>
-        </repository>
-    </repositories>
-
-    <properties>
-        <revision>8.1.2</revision>
-
-        <oap.deps.oap.version>8.2.6</oap.deps.oap.version>
-        <oap.deps.oap.logstream>5.1.1</oap.deps.oap.logstream>
-        <oap.deps.slf4j.version>1.7.30</oap.deps.slf4j.version>
-        <oap.deps.lombok.version>1.18.14</oap.deps.lombok.version>
-        <oap.deps.logback.version>1.2.3</oap.deps.logback.version>
-    </properties>
-</project>
+    <root level="TRACE">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
