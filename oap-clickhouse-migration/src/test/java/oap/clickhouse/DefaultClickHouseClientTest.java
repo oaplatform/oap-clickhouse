@@ -27,7 +27,7 @@ package oap.clickhouse;
 import oap.clickhouse.migration.Database;
 import oap.clickhouse.migration.TableEngine;
 import oap.clickhouse.migration.TableInfo;
-import oap.testng.Env;
+import oap.system.Env;
 import oap.testng.Teamcity;
 import oap.util.Dates;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -57,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class DefaultClickHouseClientTest {
     private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
-    private static final String HOST = Env.getEnvOrDefault( "CLICKHOUSE_HOST", "localhost" );
+    private static final String HOST = Env.get( "CLICKHOUSE_HOST", "localhost" );
     private static final int PORT = 8123;
     private static final int TIMEOUT = 1048576;
 

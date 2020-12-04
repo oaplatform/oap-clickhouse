@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Created by igor.petrenko on 02.03.2018.
  */
-public class TestDBTest {
+public class ClickhouseFixtureTest {
     private static final String HOST = Env.getEnvOrDefault( "CLICKHOUSE_HOST", "localhost" );
 
     @Test
@@ -44,7 +44,7 @@ public class TestDBTest {
         var counter = new MutableInt();
         var count = 1;
 
-        var clickHouseClient = new DefaultClickHouseClient( HOST, 8123, TestDB.testDbName( "db" ), 1048576, 1048576 );
+        var clickHouseClient = new DefaultClickHouseClient( HOST, 8123, ClickhouseFixture.testDbName( "db" ), 1048576, 1048576 );
         clickHouseClient.createDatabase();
         try {
             clickHouseClient.execute( "CREATE TABLE TEST (A INTEGER, B String, C String) ENGINE = MergeTree ORDER BY (A)", true );
@@ -61,7 +61,7 @@ public class TestDBTest {
 
             clickHouseClient.get( "SELECT * FROM TEST", str -> counter.increment() );
         } finally {
-            TestDB.dropDatabases( clickHouseClient );
+            ClickhouseFixture.dropDatabases( clickHouseClient );
         }
 
         assertThat( counter.getValue() ).isEqualTo( count );
