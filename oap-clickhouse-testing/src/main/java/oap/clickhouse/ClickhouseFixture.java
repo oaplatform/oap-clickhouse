@@ -41,7 +41,10 @@ import static oap.testng.Fixture.Scope.SUITE;
  * Created by igor.petrenko on 2020-12-04.
  */
 public class ClickhouseFixture extends EnvFixture {
-    private final String CLICKHOUSE_HOST = Env.get( "CLICKHOUSE_HOST", "localhost" );
+    public static final String CLICKHOUSE_HOST = "CLICKHOUSE_HOST";
+    public static final String DATABASE_NAME = "DATABASE_NAME";
+
+    private final String clickhouseHost = Env.get( CLICKHOUSE_HOST, "localhost" );
     private final Scope scope;
     private final String databaseName;
 
@@ -74,12 +77,33 @@ public class ClickhouseFixture extends EnvFixture {
     }
 
     private void defineEnv() {
-        define( scope, "DATABASE_NAME", testDbName( databaseName ) );
-        define( "CLICKHOUSE_HOST", CLICKHOUSE_HOST );
+        define( scope, DATABASE_NAME, testDbName( databaseName ) );
+        define( scope, CLICKHOUSE_HOST, clickhouseHost );
     }
 
     public ClickhouseFixture withScope( Scope scope ) {
         return new ClickhouseFixture( scope, this.databaseName );
+    }
+
+    @Override
+    public void beforeSuite() {
+        defineEnv();
+
+        super.beforeSuite();
+    }
+
+    @Override
+    public void beforeClass() {
+        defineEnv();
+
+        super.beforeClass();
+    }
+
+    @Override
+    public void beforeMethod() {
+        defineEnv();
+
+        super.beforeMethod();
     }
 
     @Override
@@ -102,7 +126,7 @@ public class ClickhouseFixture extends EnvFixture {
 
     public void stop( Scope scope ) {
         if( scope == this.scope ) {
-            var client = new DefaultClickHouseClient( CLICKHOUSE_HOST, 8123, databaseName, Dates.m( 1 ), Dates.m( 1 ) );
+            var client = new DefaultClickHouseClient( clickhouseHost, 8123, databaseName, Dates.m( 1 ), Dates.m( 1 ) );
             dropDatabases( client );
         }
     }
