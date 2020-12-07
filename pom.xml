@@ -49,9 +49,9 @@
     </repositories>
 
     <properties>
-        <oap.project.clickhouse.version>8.2.1</oap.project.clickhouse.version>
+        <oap.project.clickhouse.version>8.2.2</oap.project.clickhouse.version>
 
-        <oap.deps.oap.version>8.2.24</oap.deps.oap.version>
+        <oap.deps.oap.version>8.2.26</oap.deps.oap.version>
         <oap.deps.oap.logstream>5.1.1</oap.deps.oap.logstream>
         <oap.deps.slf4j.version>1.7.30</oap.deps.slf4j.version>
         <oap.deps.lombok.version>1.18.14</oap.deps.lombok.version>
