@@ -36,7 +36,7 @@ import static java.util.stream.Collectors.joining;
  */
 @Slf4j
 public class View extends AbstractTable {
-    private static final String CREATE_VIEW_QUERY = "CREATE ${MATERIALIZED} VIEW ${DATABASE}.${TABLE}${TO} ${POPULATE} AS SELECT ${FIELDS}${AGGREGATES} FROM ${DATABASE}.${FROM_TABLE} ${GROUP_BY}";
+    private static final String CREATE_VIEW_QUERY = "CREATE ${MATERIALIZED} VIEW ${DATABASE}.${TABLE}${TO} ${POPULATE} AS SELECT ${FIELDS}${AGGREGATES} FROM ${DATABASE}.${FROM_TABLE}${WHERE} ${GROUP_BY}";
 
     public View( Database database, String name ) {
         super( database, name );
@@ -52,6 +52,7 @@ public class View extends AbstractTable {
             "POPULATE", view.populate ? "Engine = " + engine + " POPULATE" : "",
             "FIELDS", fieldsStr + ( view.aggregates.isEmpty() ? "" : "," + aggregateNameStr ),
             "GROUP_BY", !view.aggregates.isEmpty() ? "GROUP BY " + groupByStr : "",
+            "WHERE", view.where.map( w -> " WHERE " + w ).orElse( "" ),
             "FROM_TABLE", view.fromTable,
             "TO", view.toTable.map( toTable -> " TO " + toTable ).orElse( "" )
         ) ), true );

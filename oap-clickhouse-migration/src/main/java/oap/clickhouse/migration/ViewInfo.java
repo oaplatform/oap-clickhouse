@@ -51,18 +51,22 @@ public class ViewInfo {
     public final List<AggregatorFunction> aggregates;
     public final String fromTable;
     public final List<Field> fields;
+    public final Optional<String> where;
     public final ArrayList<String> pk = new ArrayList<>();
     public final Optional<String> toTable;
 
     public ViewInfo( String name, boolean materialized, boolean populate,
                      List<Field> fields,
-                     List<AggregatorFunction> aggregates, String fromTable,
+                     List<AggregatorFunction> aggregates,
+                     Optional<String> where,
+                     String fromTable,
                      Optional<String> toTable ) {
         this.name = name;
         this.materialized = materialized;
         this.populate = populate;
         this.fields = fields;
         this.aggregates = aggregates;
+        this.where = where;
         this.fromTable = fromTable;
         this.toTable = toTable;
 

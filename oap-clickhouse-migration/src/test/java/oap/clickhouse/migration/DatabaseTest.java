@@ -100,6 +100,7 @@ public class DatabaseTest extends BaseDatabaseTest {
                 List.of( new ViewInfo.AggregatorFunction( null, "C", count ),
                     new ViewInfo.AggregatorFunction( "ID3", "S", sum ),
                     new ViewInfo.AggregatorFunction( "SOURCE", "SOURCE", groupArray ) ),
+                Optional.empty(),
                 "TEST", Optional.empty() )
         ), Dates.m( 10 ) );
         assertTrue( database.getTable( "TEST" ).exists() );
@@ -135,6 +136,7 @@ public class DatabaseTest extends BaseDatabaseTest {
             new ViewInfo( "VIEW", true, true, List.of( _f( "toStartOfDay(DATETIME)", "DATETIME" ), _f( "PARTITIONING_DATE" ) ),
                 List.of( new ViewInfo.AggregatorFunction( null, "C", count ),
                     new ViewInfo.AggregatorFunction( "SOURCE", "SOURCE", groupUniqArray ) ),
+                Optional.empty(),
                 "TEST", Optional.empty() )
         ), Dates.m( 10 ) );
 
@@ -161,11 +163,36 @@ public class DatabaseTest extends BaseDatabaseTest {
             new ViewInfo( "VIEW", true, true, List.of( _f( "toStartOfDay(DATETIME)", "DATETIME" ), _f( "PARTITIONING_DATE" ) ),
                 List.of( new ViewInfo.AggregatorFunction( null, "C", count ),
                     new ViewInfo.AggregatorFunction( "SOURCE", "SOURCE", groupUniqArray ) ),
+                Optional.empty(),
                 "TEST", Optional.empty() ).addPk( "DATETIME" ).addPk( "PARTITIONING_DATE" )
         ), Dates.m( 10 ) );
 
         assertString( database.client.getLines( "SHOW CREATE TABLE VIEW" ).get( 0 ) )
             .contains( "ORDER BY (DATETIME, PARTITIONING_DATE)" );
+    }
+
+    @Test
+    public void testViewWithWhere() {
+        var tableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
+        database.upgrade( List.of( new TableInfo(
+            "TEST",
+            List.of(
+                build( "DATETIME", DATETIME ).withDefaultValue( "2019-20-30 11:10:00" ),
+                build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ),
+                build( "SOURCE", STRING ).withDefaultValue( "" )
+            ),
+            List.of(),
+            tableEngine,
+            Map.of() ) ), List.of(
+            new ViewInfo( "VIEW", true, true, List.of( _f( "toStartOfDay(DATETIME)", "DATETIME" ), _f( "PARTITIONING_DATE" ) ),
+                List.of( new ViewInfo.AggregatorFunction( null, "C", count ),
+                    new ViewInfo.AggregatorFunction( "SOURCE", "SOURCE", groupUniqArray ) ),
+                Optional.of( "DATETIME <> '0000-00-00 00:00:00'" ),
+                "TEST", Optional.empty() ).addPk( "DATETIME" ).addPk( "PARTITIONING_DATE" )
+        ), Dates.m( 10 ) );
+
+        assertString( database.client.getLines( "SHOW CREATE TABLE VIEW" ).get( 0 ) )
+            .contains( "TEST\\nWHERE DATETIME != \\'0000-00-00 00:00:00\\'\\n" );
     }
 
     @Test
@@ -201,6 +228,7 @@ public class DatabaseTest extends BaseDatabaseTest {
                 new ViewInfo( "VIEW", true, false, List.of( _f( "toStartOfDay(DATETIME)", "DATETIME" ), _f( "PARTITIONING_DATE" ) ),
                     List.of( new ViewInfo.AggregatorFunction( null, "C", count ),
                         new ViewInfo.AggregatorFunction( "SOURCE", "SOURCE", groupUniqArray ) ),
+                    Optional.empty(),
                     "FROM_TEST", Optional.of( "TO_TEST" ) )
             ), Dates.m( 10 ) );
 
