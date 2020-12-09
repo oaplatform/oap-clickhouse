@@ -164,7 +164,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
     }
 
     @Override
-    public ClickHouseProcess putAsync( String table, DataFormat format, long timeout ) {
+    public ClickhouseProcess putAsync( String table, DataFormat format, long timeout ) {
         return executeAsync( getSubstitute( table, PUT, ( v ) ->
             switch( v ) {
                 case "FIELDS" -> "";
@@ -174,7 +174,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
     }
 
     @Override
-    public ClickHouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
+    public ClickhouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
         return executeAsync( getSubstitute( table, PUT, ( v ) ->
             switch( v ) {
                 case "FIELDS" -> Strings.join( ",", fields, "(", ")" );
@@ -275,16 +275,16 @@ public class DefaultClickhouseClient implements ClickhouseClient {
     }
 
     @Override
-    public ClickHouseProcess executeAsync( String query, boolean useDatabase, long timeout ) {
+    public ClickhouseProcess executeAsync( String query, boolean useDatabase, long timeout ) {
         return newProcess( new Query( query, false ), useDatabase, timeout );
     }
 
-    private ClickHouseProcess newProcess( Query query, String database, long timeout ) {
-        return new ClickHouseProcessHttp( query, database, user, timeout );
+    private ClickhouseProcess newProcess( Query query, String database, long timeout ) {
+        return new ClickhouseProcessHttp( query, database, user, timeout );
     }
 
-    private ClickHouseProcess newProcess( Query query, boolean useDatabase, long timeout ) {
-        return new ClickHouseProcessHttp( query, useDatabase, user, timeout );
+    private ClickhouseProcess newProcess( Query query, boolean useDatabase, long timeout ) {
+        return new ClickhouseProcessHttp( query, useDatabase, user, timeout );
     }
 
     @ToString
@@ -323,17 +323,17 @@ public class DefaultClickhouseClient implements ClickhouseClient {
         }
     }
 
-    public class ClickHouseProcessHttp implements ClickHouseProcess {
+    public class ClickhouseProcessHttp implements ClickhouseProcess {
         private final Query query;
         private final String database;
         private final String user;
         private final long timeout;
 
-        public ClickHouseProcessHttp( Query query, boolean useDatabase, String user, long timeout ) {
+        public ClickhouseProcessHttp( Query query, boolean useDatabase, String user, long timeout ) {
             this( query, useDatabase ? DefaultClickhouseClient.this.database : null, user, timeout );
         }
 
-        public ClickHouseProcessHttp( Query query, String database, String user, long timeout ) {
+        public ClickhouseProcessHttp( Query query, String database, String user, long timeout ) {
             this.query = query;
             this.database = database;
             this.user = user;

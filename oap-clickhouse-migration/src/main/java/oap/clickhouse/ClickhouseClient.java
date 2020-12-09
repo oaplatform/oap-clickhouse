@@ -66,25 +66,25 @@ public interface ClickhouseClient {
     void deleteRows( String table, String where, boolean async, long timeout );
 
 
-    default ClickHouseProcess putAsync( String table, DataFormat format ) {
+    default ClickhouseProcess putAsync( String table, DataFormat format ) {
         return putAsync( table, format, getTimeout() );
     }
 
-    ClickHouseProcess putAsync( String table, DataFormat format, long timeout );
+    ClickhouseProcess putAsync( String table, DataFormat format, long timeout );
 
 
-    default ClickHouseProcess putAsync( String table, DataFormat format, Collection<String> fields ) {
+    default ClickhouseProcess putAsync( String table, DataFormat format, Collection<String> fields ) {
         return putAsync( table, format, fields, getTimeout() );
     }
 
-    ClickHouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout );
+    ClickhouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout );
 
 
-    default ClickHouseProcess executeAsync( String query, boolean useDatabase ) {
+    default ClickhouseProcess executeAsync( String query, boolean useDatabase ) {
         return executeAsync( query, useDatabase, getTimeout() );
     }
 
-    ClickHouseProcess executeAsync( String query, boolean useDatabase, long timeout );
+    ClickhouseProcess executeAsync( String query, boolean useDatabase, long timeout );
 
     default void execute( String sql, boolean useDatabase ) {
         execute( sql, useDatabase, getTimeout() );
@@ -134,7 +134,7 @@ public interface ClickhouseClient {
         return withUser( null );
     }
 
-    interface ClickHouseProcess {
+    interface ClickhouseProcess {
         ClickhouseStream toStream() throws ClickhouseException;
     }
 }

@@ -80,12 +80,12 @@ public class MockClickhouseClient implements ClickhouseClient {
     }
 
     @Override
-    public ClickHouseProcess putAsync( String table, DataFormat format, long timeout ) {
+    public ClickhouseProcess putAsync( String table, DataFormat format, long timeout ) {
         throw new NotImplementedException( "" );
     }
 
     @Override
-    public ClickHouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
+    public ClickhouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
         throw new NotImplementedException( "" );
     }
 
@@ -95,7 +95,7 @@ public class MockClickhouseClient implements ClickhouseClient {
     }
 
     @Override
-    public ClickHouseProcess executeAsync( String query, boolean useDatabase, long timeout ) {
+    public ClickhouseProcess executeAsync( String query, boolean useDatabase, long timeout ) {
         throw new NotImplementedException( "" );
     }
 
