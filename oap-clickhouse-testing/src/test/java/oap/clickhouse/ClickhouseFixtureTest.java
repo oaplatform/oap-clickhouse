@@ -44,7 +44,7 @@ public class ClickhouseFixtureTest {
         var counter = new MutableInt();
         var count = 1;
 
-        var clickHouseClient = new DefaultClickHouseClient( HOST, 8123, ClickhouseFixture.testDbName( "db" ), 1048576, 1048576 );
+        var clickHouseClient = new DefaultClickhouseClient( HOST, 8123, ClickhouseFixture.testDbName( "db" ), 1048576, 1048576 );
         clickHouseClient.createDatabase();
         try {
             clickHouseClient.execute( "CREATE TABLE TEST (A INTEGER, B String, C String) ENGINE = MergeTree ORDER BY (A)", true );

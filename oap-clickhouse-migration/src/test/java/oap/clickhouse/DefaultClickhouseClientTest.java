@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Created by igor.petrenko on 28.02.2018.
  */
-public class DefaultClickHouseClientTest {
+public class DefaultClickhouseClientTest {
     private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
     private static final String HOST = Env.get( "CLICKHOUSE_HOST", "localhost" );
@@ -64,15 +64,15 @@ public class DefaultClickHouseClientTest {
     private String DB;
     private Database database;
     private String initSql;
-    private DefaultClickHouseClient clickHouseClient;
+    private DefaultClickhouseClient clickHouseClient;
 
     @BeforeMethod
     public void beforeMethod() {
         DB = "db_" + StringUtils.replaceChars( Teamcity.buildPrefix(), ".-", "_" );
         System.setProperty( "TABLE_SUFFIX", "_" + RandomStringUtils.randomAlphabetic( 5 ) );
-        database = new DefaultClickHouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT ).getDatabase();
+        database = new DefaultClickhouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT ).getDatabase();
 
-        clickHouseClient = new DefaultClickHouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT );
+        clickHouseClient = new DefaultClickhouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT );
 
         try {
             clickHouseClient.dropDatabase();
@@ -90,7 +90,7 @@ public class DefaultClickHouseClientTest {
 
     @Test
     public void testClickhouseNotFound() {
-        assertThatCode( () -> new DefaultClickHouseClient( "unknown host", 9999, DB, TIMEOUT, TIMEOUT ) )
+        assertThatCode( () -> new DefaultClickhouseClient( "unknown host", 9999, DB, TIMEOUT, TIMEOUT ) )
             .doesNotThrowAnyException();
     }
 
@@ -174,7 +174,7 @@ public class DefaultClickHouseClientTest {
                 out.write( "11\t2017-01-01 10:12:13\n".getBytes() );
                 out.write( "12\t2017-01-01".getBytes() );
             }
-        } ).isInstanceOf( ClickHouseException.class );
+        } ).isInstanceOf( ClickhouseException.class );
     }
 
     @Test

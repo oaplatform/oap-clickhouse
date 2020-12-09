@@ -28,7 +28,7 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.clickhouse.ClickHouseClient;
+import oap.clickhouse.ClickhouseClient;
 import oap.util.Lists;
 
 import java.util.List;
@@ -45,10 +45,10 @@ public class Database {
     private static ConcurrentHashMap<String, View> views = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, Dictionary> dictionaries = new ConcurrentHashMap<>();
 
-    public final ClickHouseClient client;
+    public final ClickhouseClient client;
     public final String database;
 
-    public Database( String database, ClickHouseClient client ) {
+    public Database( String database, ClickhouseClient client ) {
         this.database = database;
         this.client = client;
     }

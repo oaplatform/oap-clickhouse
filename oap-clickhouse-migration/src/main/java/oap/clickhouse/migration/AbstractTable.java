@@ -30,7 +30,7 @@ import com.google.common.cache.CacheBuilder;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.clickhouse.ClickHouseException;
+import oap.clickhouse.ClickhouseException;
 import oap.logstream.tsv.Tsv;
 import oap.util.Lists;
 import oap.util.Strings;
@@ -90,12 +90,12 @@ public class AbstractTable {
         } );
     }
 
-    public void drop() throws ClickHouseException {
+    public void drop() throws ClickhouseException {
         database.client.execute( buildQuery( DROP_TABLE_SQL, emptyMap() ), true );
         refresh();
     }
 
-    public boolean exists() throws ClickHouseException {
+    public boolean exists() throws ClickhouseException {
         try {
             return ( Boolean ) cache.get( "exists", () -> {
                 var sql = buildQuery( TABLE_EXISTS_SQL, emptyMap() );
@@ -108,9 +108,9 @@ public class AbstractTable {
         }
     }
 
-    protected ClickHouseException getException( ExecutionException e ) {
-        if( e.getCause() instanceof ClickHouseException ) return ( ClickHouseException ) e.getCause();
-        return new ClickHouseException( e.getCause() );
+    protected ClickhouseException getException( ExecutionException e ) {
+        if( e.getCause() instanceof ClickhouseException ) return ( ClickhouseException ) e.getCause();
+        return new ClickhouseException( e.getCause() );
     }
 
     public void refresh() {
@@ -119,7 +119,7 @@ public class AbstractTable {
     }
 
     @SuppressWarnings( "unchecked" )
-    public Map<String, FieldInfo> getFields() throws ClickHouseException {
+    public Map<String, FieldInfo> getFields() throws ClickhouseException {
         try {
             return ( Map<String, FieldInfo> ) cache.get( "getFields", () -> {
                 var fields = new LinkedHashMap<String, FieldInfo>();

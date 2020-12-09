@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.clickhouse.ClickHouseException;
+import oap.clickhouse.ClickhouseException;
 import oap.clickhouse.migration.FieldType.LowCardinality;
 import oap.util.Lists;
 
@@ -62,7 +62,7 @@ public class Table extends AbstractTable {
         return Lists.find2( fields, f -> f.ttl > 0 );
     }
 
-    public TtlInfo getTtlField() throws ClickHouseException {
+    public TtlInfo getTtlField() throws ClickhouseException {
         try {
             var getTtlField = ( TtlInfo ) cache.get( "getTtlField", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
@@ -82,7 +82,7 @@ public class Table extends AbstractTable {
         }
     }
 
-    public int getIndexGranularity() throws ClickHouseException {
+    public int getIndexGranularity() throws ClickhouseException {
         try {
             return ( Integer ) cache.get( "getIndexGranularity", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
@@ -142,7 +142,7 @@ public class Table extends AbstractTable {
             for( var cf : fields ) {
                 if( !tableFields.containsKey( cf.name ) ) {
                     if( prev == null )
-                        throw new ClickHouseException( "no way to add a column " + cf.name + " to the beginning of a table " + database.getName() + "." + name, 0, null );
+                        throw new ClickhouseException( "no way to add a column " + cf.name + " to the beginning of a table " + database.getName() + "." + name, 0, null );
 
                     log.debug( "add field {} after {}", cf.name, prev.name );
                     if( !dryRun ) {
@@ -227,7 +227,7 @@ public class Table extends AbstractTable {
 
     }
 
-    public boolean isMemoryEngine() throws ClickHouseException {
+    public boolean isMemoryEngine() throws ClickhouseException {
         try {
             return ( Boolean ) cache.get( "isMemoryEngine", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
@@ -248,12 +248,12 @@ public class Table extends AbstractTable {
         }
     }
 
-    public void truncate() throws ClickHouseException {
+    public void truncate() throws ClickhouseException {
         database.client.execute( buildQuery( TRUNCATE_TABLE_SQL, emptyMap() ), true );
     }
 
     @SuppressWarnings( "unchecked" )
-    public List<ConfigIndex> getIndexes() throws ClickHouseException {
+    public List<ConfigIndex> getIndexes() throws ClickhouseException {
         try {
             return ( List<ConfigIndex> ) cache.get( "getIndexes", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );

@@ -34,22 +34,22 @@ import java.util.function.Consumer;
 /**
  * Created by igor.petrenko on 28.02.2018.
  */
-public interface ClickHouseClient {
-    default List<String> getLines( String query ) throws ClickHouseException {
+public interface ClickhouseClient {
+    default List<String> getLines( String query ) throws ClickhouseException {
         return getLines( query, true, getTimeout() );
     }
 
-    default List<String> getLines( String query, long timeout ) throws ClickHouseException {
+    default List<String> getLines( String query, long timeout ) throws ClickhouseException {
         return getLines( query, true, timeout );
     }
 
     long getTimeout();
 
-    default List<String> getLines( String query, boolean useDatabase ) throws ClickHouseException {
+    default List<String> getLines( String query, boolean useDatabase ) throws ClickhouseException {
         return getLines( query, useDatabase, getTimeout() );
     }
 
-    List<String> getLines( String query, boolean useDatabase, long timeout ) throws ClickHouseException;
+    List<String> getLines( String query, boolean useDatabase, long timeout ) throws ClickhouseException;
 
 
     default OutputStream put( String table, DataFormat format ) {
@@ -110,31 +110,31 @@ public interface ClickHouseClient {
         dropTable( table, getTimeout() );
     }
 
-    default int get( String query, Consumer<String> line ) throws ClickHouseException {
+    default int get( String query, Consumer<String> line ) throws ClickhouseException {
         return get( query, line, true, getTimeout() );
     }
 
-    default int get( String query, Consumer<String> line, long timeout ) throws ClickHouseException {
+    default int get( String query, Consumer<String> line, long timeout ) throws ClickhouseException {
         return get( query, line, true, timeout );
     }
 
-    default int get( String query, Consumer<String> line, boolean useDatabase ) throws ClickHouseException {
+    default int get( String query, Consumer<String> line, boolean useDatabase ) throws ClickhouseException {
         return get( query, line, useDatabase, getTimeout() );
     }
 
-    int get( String query, Consumer<String> line, boolean useDatabase, long timeout ) throws ClickHouseException;
+    int get( String query, Consumer<String> line, boolean useDatabase, long timeout ) throws ClickhouseException;
 
     Database getDatabase();
 
-    ClickHouseClient useDatabase( String database );
+    ClickhouseClient useDatabase( String database );
 
-    ClickHouseClient withUser( String user );
+    ClickhouseClient withUser( String user );
 
-    default ClickHouseClient withDefaultUser() {
+    default ClickhouseClient withDefaultUser() {
         return withUser( null );
     }
 
     interface ClickHouseProcess {
-        ClickhouseStream toStream() throws ClickHouseException;
+        ClickhouseStream toStream() throws ClickhouseException;
     }
 }

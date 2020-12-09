@@ -27,7 +27,7 @@ package oap.clickhouse.migration;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.clickhouse.ClickHouseException;
+import oap.clickhouse.ClickhouseException;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -55,7 +55,7 @@ public class Dictionary extends AbstractTable {
 
 
     @Override
-    public boolean exists() throws ClickHouseException {
+    public boolean exists() throws ClickhouseException {
         try {
             return ( Boolean ) cache.get( "exists", () -> {
                 var sql = buildQuery( DICTIONARY_EXISTS_QUERY, emptyMap() );
@@ -68,7 +68,7 @@ public class Dictionary extends AbstractTable {
         }
     }
 
-    public void upgrade( Supplier<String> init ) throws ClickHouseException {
+    public void upgrade( Supplier<String> init ) throws ClickhouseException {
         if( !exists() ) {
             log.debug( "Table {}.{} doesn't exist", database.getName(), name );
             database.client.execute( buildQuery( init.get(), emptyMap() ), true );
@@ -79,7 +79,7 @@ public class Dictionary extends AbstractTable {
     }
 
     @Override
-    public void drop() throws ClickHouseException {
+    public void drop() throws ClickhouseException {
         database.client.execute( buildQuery( DROP_DICTIONARY_SQL, emptyMap() ), true );
         refresh();
     }

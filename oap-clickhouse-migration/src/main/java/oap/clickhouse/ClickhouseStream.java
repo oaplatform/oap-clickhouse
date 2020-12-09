@@ -75,7 +75,7 @@ public class ClickhouseStream implements Closeable {
                 if( http.getResponseCode() != HTTP_OK ) {
                     var body = IOUtils.toString( http.getErrorStream(), StandardCharsets.UTF_8 );
                     log.error( "url code = {}, body = {}", http.getResponseCode(), body );
-                    throw new ClickHouseException( "", http.getResponseCode(), body );
+                    throw new ClickhouseException( "", http.getResponseCode(), body );
                 }
 
                 inputStream = http.getInputStream();
