@@ -102,7 +102,7 @@ public class ConfigField {
     }
 
     String getColumnSql() {
-        return name + ' ' + type.toClickHouseType( length, enumName, lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ) + materialized
+        return name + ' ' + type.toClickhouseType( length, enumName, lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ) + materialized
             .map( m -> " MATERIALIZED " + m )
             .orElse( defaultValue.map( dv -> " DEFAULT " + valueToSql( dv ) ).orElse( "" ) );
     }
@@ -122,6 +122,6 @@ public class ConfigField {
     }
 
     public boolean typeEquals( String type ) {
-        return this.type.toClickHouseType( length, enumName, lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ).equals( type );
+        return this.type.toClickhouseType( length, enumName, lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ).equals( type );
     }
 }

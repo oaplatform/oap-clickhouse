@@ -90,10 +90,14 @@ public class ViewInfo {
 
     @ToString
     @EqualsAndHashCode
-    @AllArgsConstructor
     public static class Field {
         public final String name;
         public final String alias;
+
+        public Field( String name, String alias ) {
+            this.name = name;
+            this.alias = alias;
+        }
 
         public String getFieldWithAlias() {
             return name + ( alias != null ? " AS " + alias : "" );
@@ -101,6 +105,14 @@ public class ViewInfo {
 
         public String getFieldName() {
             return alias != null ? alias : name;
+        }
+
+        public static Field of( String name, String alias ) {
+            return new Field( name, alias );
+        }
+
+        public static Field of( String name ) {
+            return of( name, null );
         }
     }
 

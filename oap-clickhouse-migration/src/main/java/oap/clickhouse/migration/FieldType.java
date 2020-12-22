@@ -41,91 +41,91 @@ import java.util.stream.Collectors;
 public enum FieldType {
     STRING() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( length.map( l -> "FixedString(" + l + ')' ).orElse( "String" ) );
         }
     },
     DATETIME_ARRAY() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return array( length, enumName, DATETIME, lowCardinality );
         }
     },
     DATETIME() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "DateTime" );
         }
     },
     DATETIME64() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "DateTime64" );
         }
     },
     DATE() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "Date" );
         }
     },
     BOOLEAN() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "UInt8" );
         }
     },
     STRING_ARRAY() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return array( length, enumName, STRING, lowCardinality );
         }
     },
     BYTE() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "UInt8" );
         }
     },
     INTEGER() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "Int32" );
         }
     },
     UNSIGNED_INTEGER() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "UInt32" );
         }
     },
     LONG() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "Int64" );
         }
     },
     LONG_ARRAY() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return array( length, enumName, LONG, lowCardinality );
         }
     },
     UNSIGNED_LONG() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "UInt64" );
         }
     },
     DOUBLE() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return lowCardinality.apply( "Float64" );
         }
     },
     ENUM() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             var dictionaryName = enumName.orElse( "" );
 
             var level = dictionaryName.indexOf( '/' );
@@ -165,16 +165,16 @@ public enum FieldType {
     },
     ENUM_ARRAY() {
         @Override
-        public String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
+        public String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality ) {
             return array( length, enumName, ENUM, lowCardinality );
         }
     };
 
     private static String array( Optional<Integer> length, Optional<String> enumName, FieldType type, LowCardinality lowCardinality ) {
-        return "Array(" + type.toClickHouseType( length, enumName, lowCardinality ) + ")";
+        return "Array(" + type.toClickhouseType( length, enumName, lowCardinality ) + ")";
     }
 
-    public abstract String toClickHouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality );
+    public abstract String toClickhouseType( Optional<Integer> length, Optional<String> enumName, LowCardinality lowCardinality );
 
     public enum LowCardinality implements Function<String, String> {
         ON() {

@@ -61,7 +61,7 @@ import static org.testng.Assert.assertTrue;
 /**
  * Created by igor.petrenko on 28.02.2018.
  */
-public class TableTest extends BaseDatabaseTest {
+public class TableTest extends DatabaseTest {
     public static final TableEngine TABLE_ENGINE_MEMORY = new TableEngine( Memory );
     private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
 

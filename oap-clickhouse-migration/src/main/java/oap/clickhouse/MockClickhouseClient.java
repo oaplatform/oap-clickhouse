@@ -43,7 +43,7 @@ import static java.util.Collections.emptyList;
 /**
  * Created by igor.petrenko on 28.02.2018.
  */
-public class MockClickHouseClient implements ClickHouseClient {
+public class MockClickhouseClient implements ClickHouseClient {
     public final HashSet<Drop> drops;
     public final HashSet<Put> puts;
     public final List<String> execute;
@@ -51,11 +51,11 @@ public class MockClickHouseClient implements ClickHouseClient {
     private List<String> lines = emptyList();
     private List<String> getLines = emptyList();
 
-    public MockClickHouseClient() {
+    public MockClickhouseClient() {
         this( "mock", new HashSet<>(), new HashSet<>(), new ArrayList<>() );
     }
 
-    public MockClickHouseClient( String database, HashSet<Drop> drops, HashSet<Put> puts, List<String> execute ) {
+    public MockClickhouseClient( String database, HashSet<Drop> drops, HashSet<Put> puts, List<String> execute ) {
         this.database = database;
         this.drops = drops;
         this.puts = puts;
@@ -80,12 +80,12 @@ public class MockClickHouseClient implements ClickHouseClient {
     }
 
     @Override
-    public ClickHouseProcess putAsync( String table, DataFormat format, long timeout ) {
+    public ClickhouseProcess putAsync( String table, DataFormat format, long timeout ) {
         throw new NotImplementedException( "" );
     }
 
     @Override
-    public ClickHouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
+    public ClickhouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
         throw new NotImplementedException( "" );
     }
 
@@ -95,7 +95,7 @@ public class MockClickHouseClient implements ClickHouseClient {
     }
 
     @Override
-    public ClickHouseProcess executeAsync( String query, boolean useDatabase, long timeout ) {
+    public ClickhouseProcess executeAsync( String query, boolean useDatabase, long timeout ) {
         throw new NotImplementedException( "" );
     }
 
@@ -132,7 +132,7 @@ public class MockClickHouseClient implements ClickHouseClient {
 
     @Override
     public ClickHouseClient useDatabase( String database ) {
-        return new MockClickHouseClient( database, drops, puts, execute );
+        return new MockClickhouseClient( database, drops, puts, execute );
     }
 
     @Override

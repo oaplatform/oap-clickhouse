@@ -175,12 +175,11 @@ public class Table extends AbstractTable {
                 var tableField = tableFields.get( cf.name );
                 if( tableField != null ) {
                     if( !cf.typeEquals( tableField.type ) ) {
-                        log.trace( "modify field {}, type: {} -> {}", cf.name, tableField.type, cf.type.toClickHouseType( cf.length, cf.enumName, cf.lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ) );
+                        log.trace( "modify field {}, type: {} -> {}", cf.name, tableField.type, cf.type.toClickhouseType( cf.length, cf.enumName, cf.lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ) );
 
                         if( database.settings.isPreventModify() ) {
                             throw new ClickHouseException( "field '" + tableField.name + "' cannot be modified", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_modify has set" );
                         }
-
                         if( !dryRun )
                             database.client.execute( buildQuery( cf.getModifySql(), emptyMap() ), true, timeout );
                         modified = true;

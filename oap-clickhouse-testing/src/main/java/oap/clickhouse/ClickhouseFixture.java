@@ -45,7 +45,6 @@ public class ClickhouseFixture extends EnvFixture {
     public static final String DATABASE_NAME = "DATABASE_NAME";
 
     private final String clickhouseHost = Env.get( CLICKHOUSE_HOST, "localhost" );
-    private final Scope scope;
     private final String databaseName;
 
     public ClickhouseFixture( String databaseName ) {
@@ -55,6 +54,7 @@ public class ClickhouseFixture extends EnvFixture {
     public ClickhouseFixture( Scope scope, String databaseName ) {
         this.scope = scope;
         this.databaseName = databaseName;
+        this.defineEnv();
     }
 
     public static String testDbName( String database ) {
@@ -62,8 +62,8 @@ public class ClickhouseFixture extends EnvFixture {
     }
 
     public static void dropDatabases( ClickHouseClient client ) {
-        final String time = DateTime.now().minusDays( 2 ).toString( "YYYY-MM-dd HH:mm:ss" );
-        final List<String> lines = client
+        String time = DateTime.now().minusDays( 2 ).toString( "YYYY-MM-dd HH:mm:ss" );
+        List<String> lines = client
             .useDatabase( "system" )
             .getLines( "SELECT database FROM (SELECT database, MAX(metadata_modification_time) AS time from system.tables GROUP BY database) WHERE time > '" + time + "'" );
 
@@ -77,33 +77,8 @@ public class ClickhouseFixture extends EnvFixture {
     }
 
     private void defineEnv() {
-        define( scope, DATABASE_NAME, testDbName( databaseName ) );
-        define( scope, CLICKHOUSE_HOST, clickhouseHost );
-    }
-
-    public ClickhouseFixture withScope( Scope scope ) {
-        return new ClickhouseFixture( scope, this.databaseName );
-    }
-
-    @Override
-    public void beforeSuite() {
-        defineEnv();
-
-        super.beforeSuite();
-    }
-
-    @Override
-    public void beforeClass() {
-        defineEnv();
-
-        super.beforeClass();
-    }
-
-    @Override
-    public void beforeMethod() {
-        defineEnv();
-
-        super.beforeMethod();
+        define( DATABASE_NAME, testDbName( databaseName ) );
+        define( CLICKHOUSE_HOST, clickhouseHost );
     }
 
     @Override
