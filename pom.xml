@@ -28,7 +28,7 @@
 
     <packaging>pom</packaging>
     <artifactId>oap-clickhouse</artifactId>
-    <version>${oap.clickhouse.project.version}</version>
+    <version>${oap.project.clickhouse.version}</version>
 
     <parent>
         <groupId>oap</groupId>
