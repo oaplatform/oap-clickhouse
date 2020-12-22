@@ -29,6 +29,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import oap.clickhouse.ClickHouseClient;
+import oap.clickhouse.SystemSettings;
 import oap.util.Lists;
 
 import java.util.List;
@@ -41,16 +42,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @EqualsAndHashCode
 @Slf4j
 public class Database {
-    private static ConcurrentHashMap<String, Table> tables = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<String, View> views = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<String, Dictionary> dictionaries = new ConcurrentHashMap<>();
-
     public final ClickHouseClient client;
     public final String database;
+    final SystemSettings settings;
+    private final ConcurrentHashMap<String, Table> tables = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, View> views = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Dictionary> dictionaries = new ConcurrentHashMap<>();
 
-    public Database( String database, ClickHouseClient client ) {
+    public Database( String database, ClickHouseClient client, SystemSettings settings ) {
         this.database = database;
         this.client = client;
+        this.settings = settings;
     }
 
     public Table getTable( String name ) {

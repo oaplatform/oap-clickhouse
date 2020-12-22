@@ -24,7 +24,9 @@
 
 package oap.clickhouse.migration;
 
+import oap.clickhouse.ClickHouseException;
 import oap.clickhouse.DataFormat;
+import oap.clickhouse.SystemSettings;
 import oap.clickhouse.migration.Table.TtlInfo;
 import oap.concurrent.Executors;
 import oap.concurrent.Threads;
@@ -51,6 +53,7 @@ import static oap.clickhouse.migration.FieldType.STRING;
 import static oap.clickhouse.migration.FieldType.UNSIGNED_INTEGER;
 import static oap.testng.Asserts.assertEventually;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
@@ -323,7 +326,24 @@ public class TableTest extends BaseDatabaseTest {
     }
 
     @Test
+    public void testUpgrade_DropField_Deny() throws Exception {
+        var table = database.getTable( "TEST" );
+
+        table.upgrade( List.of(
+            build( "ID", STRING ).withDefaultValue( "" ),
+            build( "ID2", STRING ).withDefaultValue( "" ),
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
+
+        assertThatThrownBy( () -> table.upgrade( List.of(
+            build( "ID", STRING ).withDefaultValue( "" ),
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) ).isInstanceOf( ClickHouseException.class );
+    }
+
+    @Test
     public void testUpgrade_DropField() throws Exception {
+        setSettings( "prevent_destroy", "false" );
+        reloadDatabase();
+
         var table = database.getTable( "TEST" );
 
         table.upgrade( List.of(
@@ -336,10 +356,20 @@ public class TableTest extends BaseDatabaseTest {
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
 
         assertThat( table.getFields().keySet() ).containsExactly( "ID", "PARTITIONING_DATE" );
+
+        var lines = database.client.getLines( "SELECT value FROM " + SystemSettings.TABLE_SYSTEM_SETTINGS + " WHERE name = 'prevent_destroy'" );
+        assertThat( lines ).containsExactly( "true" );
+    }
+
+    private void setSettings( String name, String value ) {
+        database.client.execute( "ALTER TABLE " + SystemSettings.TABLE_SYSTEM_SETTINGS + " UPDATE value = '" + value + "' WHERE name = '" + name + "'", true );
     }
 
     @Test
     public void testUpgrade_ModifyField() throws Exception {
+        setSettings( "prevent_modify", "false" );
+        reloadDatabase();
+
         var table = database.getTable( "TEST" );
 
         table.upgrade( List.of(
@@ -359,6 +389,9 @@ public class TableTest extends BaseDatabaseTest {
 
     @Test
     public void testUpgrade_AlterEnum() throws Exception {
+        setSettings( "prevent_modify", "false" );
+        reloadDatabase();
+
         var table = database.getTable( "TEST" );
 
         assertTrue( table.upgrade( List.of(
@@ -378,10 +411,33 @@ public class TableTest extends BaseDatabaseTest {
             buildEnum( "ID2", "test-dictionary2" ).withDefaultValue( "id2" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) );
         assertThat( table.getFields().values() ).extracting( tf -> tf.type ).containsExactly( "String", "Enum8('id2' = 2, 'kid3' = 3, 'did4' = 4)", "Date" );
+
+        var lines = database.client.getLines( "SELECT value FROM " + SystemSettings.TABLE_SYSTEM_SETTINGS + " WHERE name = 'prevent_modify'" );
+        assertThat( lines ).containsExactly( "true" );
+    }
+
+    @Test
+    public void testUpgradeToLowCardinality_preventModify() {
+        var table = database.getTable( "TEST" );
+
+        table.upgrade( List.of(
+            build( "ID", STRING ).withDefaultValue( "" ),
+            build( "ID2", STRING, false ).withDefaultValue( "id1" ),
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
+
+        assertThatThrownBy( () ->
+            assertTrue( table.upgrade( List.of(
+                build( "ID", STRING ).withDefaultValue( "" ),
+                build( "ID2", STRING, true ).withDefaultValue( "id1" ),
+                build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) )
+        ).isInstanceOf( ClickHouseException.class );
     }
 
     @Test
     public void testUpgradeToLowCardinality() {
+        setSettings( "prevent_modify", "false" );
+        reloadDatabase();
+
         var table = database.getTable( "TEST" );
 
         assertTrue( table.upgrade( List.of(

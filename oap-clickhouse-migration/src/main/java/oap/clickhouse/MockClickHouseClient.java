@@ -127,7 +127,7 @@ public class MockClickHouseClient implements ClickHouseClient {
 
     @Override
     public Database getDatabase() {
-        return new Database( database, this );
+        return new Database( database, this, new SystemSettings( this ) );
     }
 
     @Override

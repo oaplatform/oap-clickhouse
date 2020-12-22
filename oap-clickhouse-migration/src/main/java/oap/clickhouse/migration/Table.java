@@ -32,6 +32,7 @@ import oap.clickhouse.ClickHouseException;
 import oap.clickhouse.migration.FieldType.LowCardinality;
 import oap.util.Lists;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +157,11 @@ public class Table extends AbstractTable {
 
             for( var tf : tableFields.values() ) {
                 if( !mapConfigFields.containsKey( tf.name ) ) {
-                    log.debug( "dropPartition field {}", tf.name );
+                    log.debug( "drop field {}", tf.name );
+
+                    if( database.settings.isPreventDestroy() ) {
+                        throw new ClickHouseException( "field '" + tf.name + "' cannot be removed", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_destroy has set" );
+                    }
 
                     if( !dryRun ) {
                         database.client.execute( buildQuery( tf.getDropSql(), emptyMap() ), true, timeout );
@@ -171,6 +176,11 @@ public class Table extends AbstractTable {
                 if( tableField != null ) {
                     if( !cf.typeEquals( tableField.type ) ) {
                         log.trace( "modify field {}, type: {} -> {}", cf.name, tableField.type, cf.type.toClickHouseType( cf.length, cf.enumName, cf.lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ) );
+
+                        if( database.settings.isPreventModify() ) {
+                            throw new ClickHouseException( "field '" + tableField.name + "' cannot be modified", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_modify has set" );
+                        }
+
                         if( !dryRun )
                             database.client.execute( buildQuery( cf.getModifySql(), emptyMap() ), true, timeout );
                         modified = true;

@@ -49,7 +49,13 @@ public class BaseDatabaseTest {
 
     @BeforeMethod
     public void beforeMethod() {
-        database = new DefaultClickHouseClient( HOST, 8123, DB ).getDatabase();
+        reloadDatabase();
+    }
+
+    protected void reloadDatabase() {
+        var clickHouseClient = new DefaultClickHouseClient( HOST, 8123, DB );
+        clickHouseClient.start();
+        database = clickHouseClient.getDatabase();
         database.createIfNotExists();
         if( database.getTable( "TEST" ).exists() )
             database.getTable( "TEST" ).drop();

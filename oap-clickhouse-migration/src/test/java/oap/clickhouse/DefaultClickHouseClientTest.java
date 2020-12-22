@@ -73,6 +73,7 @@ public class DefaultClickHouseClientTest {
         database = new DefaultClickHouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT ).getDatabase();
 
         clickHouseClient = new DefaultClickHouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT );
+        clickHouseClient.start();
 
         try {
             clickHouseClient.dropDatabase();

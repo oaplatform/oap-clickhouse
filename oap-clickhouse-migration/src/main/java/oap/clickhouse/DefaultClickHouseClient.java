@@ -77,6 +77,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     public long timeout;
 
     private String user = null;
+    private SystemSettings settings;
 
     public DefaultClickHouseClient( String host, int port, String database ) {
         this( host, port, database, s( 60 ), m( 5 ) );
@@ -110,6 +111,10 @@ public class DefaultClickHouseClient implements ClickHouseClient {
         this.client = client;
     }
 
+    public void start() {
+        settings = new SystemSettings( this );
+    }
+    
     @Override
     public long getTimeout() {
         return timeout;
@@ -238,7 +243,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
 
     @Override
     public Database getDatabase() {
-        return new Database( database, this );
+        return new Database( database, this, settings );
     }
 
     @Override

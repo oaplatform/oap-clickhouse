@@ -11,3 +11,5 @@ services:
 
       connectTimeout: 60s
       timeout: 5m
+    supervision:
+      supervise: true
