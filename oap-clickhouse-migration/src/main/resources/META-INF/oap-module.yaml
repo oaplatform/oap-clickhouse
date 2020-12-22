@@ -2,7 +2,7 @@ name: oap-clickhouse
 
 services:
   clickhouse-client:
-    implementation: oap.clickhouse.DefaultClickhouseClient
+    implementation: oap.clickhouse.DefaultClickHouseClient
     parameters:
       host: localhost
       port: 8123
