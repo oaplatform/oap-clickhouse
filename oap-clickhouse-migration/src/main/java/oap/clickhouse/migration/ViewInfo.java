@@ -40,9 +40,6 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import static oap.clickhouse.migration.ViewInfo.AggregatorFunction.Function.count;
 
-/**
- * Created by igor.petrenko on 2019-10-28.
- */
 @ToString
 public class ViewInfo {
     public final String name;

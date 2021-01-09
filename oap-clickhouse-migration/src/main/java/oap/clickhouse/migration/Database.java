@@ -28,28 +28,25 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.clickhouse.ClickHouseClient;
+import oap.clickhouse.ClickhouseClient;
 import oap.clickhouse.SystemSettings;
 import oap.util.Lists;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by igor.petrenko on 24.10.2016.
- */
 @ToString
 @EqualsAndHashCode
 @Slf4j
 public class Database {
-    public final ClickHouseClient client;
+    public final ClickhouseClient client;
     public final String database;
     final SystemSettings settings;
     private final ConcurrentHashMap<String, Table> tables = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, View> views = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Dictionary> dictionaries = new ConcurrentHashMap<>();
 
-    public Database( String database, ClickHouseClient client, SystemSettings settings ) {
+    public Database( String database, ClickhouseClient client, SystemSettings settings ) {
         this.database = database;
         this.client = client;
         this.settings = settings;

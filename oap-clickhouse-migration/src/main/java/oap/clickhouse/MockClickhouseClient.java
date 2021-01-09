@@ -40,10 +40,7 @@ import java.util.function.Consumer;
 
 import static java.util.Collections.emptyList;
 
-/**
- * Created by igor.petrenko on 28.02.2018.
- */
-public class MockClickhouseClient implements ClickHouseClient {
+public class MockClickhouseClient implements ClickhouseClient {
     public final HashSet<Drop> drops;
     public final HashSet<Put> puts;
     public final List<String> execute;
@@ -119,7 +116,7 @@ public class MockClickhouseClient implements ClickHouseClient {
     }
 
     @Override
-    public int get( String query, Consumer<String> line, boolean useDatabase, long timeout ) throws ClickHouseException {
+    public int get( String query, Consumer<String> line, boolean useDatabase, long timeout ) throws ClickhouseException {
         getLines.forEach( line );
 
         return getLines.size();
@@ -131,12 +128,12 @@ public class MockClickhouseClient implements ClickHouseClient {
     }
 
     @Override
-    public ClickHouseClient useDatabase( String database ) {
+    public ClickhouseClient useDatabase( String database ) {
         return new MockClickhouseClient( database, drops, puts, execute );
     }
 
     @Override
-    public ClickHouseClient withUser( String user ) {
+    public ClickhouseClient withUser( String user ) {
         return this;
     }
 

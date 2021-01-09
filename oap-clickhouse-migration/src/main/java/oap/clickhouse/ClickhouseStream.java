@@ -39,9 +39,6 @@ import java.nio.charset.StandardCharsets;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
-/**
- * Created by igor.petrenko on 2019-10-15.
- */
 @Slf4j
 public class ClickhouseStream implements Closeable {
     private final OutputStream outputStream;
@@ -75,7 +72,7 @@ public class ClickhouseStream implements Closeable {
                 if( http.getResponseCode() != HTTP_OK ) {
                     var body = IOUtils.toString( http.getErrorStream(), StandardCharsets.UTF_8 );
                     log.error( "url code = {}, body = {}", http.getResponseCode(), body );
-                    throw new ClickHouseException( "", http.getResponseCode(), body );
+                    throw new ClickhouseException( "", http.getResponseCode(), body );
                 }
 
                 inputStream = http.getInputStream();

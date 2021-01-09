@@ -35,9 +35,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Created by igor.petrenko on 24.10.2016.
- */
 public enum FieldType {
     STRING() {
         @Override

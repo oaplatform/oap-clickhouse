@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.clickhouse.ClickHouseException;
+import oap.clickhouse.ClickhouseException;
 import oap.clickhouse.migration.FieldType.LowCardinality;
 import oap.util.Lists;
 
@@ -43,9 +43,6 @@ import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
 import static oap.clickhouse.migration.SqlUtils.addFieldsIndexesToInitQuery;
 
-/**
- * Created by igor.petrenko on 24.10.2016.
- */
 @ToString( callSuper = true )
 @EqualsAndHashCode( callSuper = true )
 @Slf4j
@@ -63,7 +60,7 @@ public class Table extends AbstractTable {
         return Lists.find2( fields, f -> f.ttl > 0 );
     }
 
-    public TtlInfo getTtlField() throws ClickHouseException {
+    public TtlInfo getTtlField() throws ClickhouseException {
         try {
             var getTtlField = ( TtlInfo ) cache.get( "getTtlField", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
@@ -83,7 +80,7 @@ public class Table extends AbstractTable {
         }
     }
 
-    public int getIndexGranularity() throws ClickHouseException {
+    public int getIndexGranularity() throws ClickhouseException {
         try {
             return ( Integer ) cache.get( "getIndexGranularity", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
@@ -143,7 +140,7 @@ public class Table extends AbstractTable {
             for( var cf : fields ) {
                 if( !tableFields.containsKey( cf.name ) ) {
                     if( prev == null )
-                        throw new ClickHouseException( "no way to add a column " + cf.name + " to the beginning of a table " + database.getName() + "." + name, 0, null );
+                        throw new ClickhouseException( "no way to add a column " + cf.name + " to the beginning of a table " + database.getName() + "." + name, 0, null );
 
                     log.debug( "add field {} after {}", cf.name, prev.name );
                     if( !dryRun ) {
@@ -160,7 +157,7 @@ public class Table extends AbstractTable {
                     log.debug( "drop field {}", tf.name );
 
                     if( database.settings.isPreventDestroy() ) {
-                        throw new ClickHouseException( "field '" + tf.name + "' cannot be removed", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_destroy has set" );
+                        throw new ClickhouseException( "field '" + tf.name + "' cannot be removed", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_destroy has set" );
                     }
 
                     if( !dryRun ) {
@@ -178,7 +175,7 @@ public class Table extends AbstractTable {
                         log.trace( "modify field {}, type: {} -> {}", cf.name, tableField.type, cf.type.toClickhouseType( cf.length, cf.enumName, cf.lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ) );
 
                         if( database.settings.isPreventModify() ) {
-                            throw new ClickHouseException( "field '" + tableField.name + "' cannot be modified", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_modify has set" );
+                            throw new ClickhouseException( "field '" + tableField.name + "' cannot be modified", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_modify has set" );
                         }
                         if( !dryRun )
                             database.client.execute( buildQuery( cf.getModifySql(), emptyMap() ), true, timeout );
@@ -236,7 +233,7 @@ public class Table extends AbstractTable {
 
     }
 
-    public boolean isMemoryEngine() throws ClickHouseException {
+    public boolean isMemoryEngine() throws ClickhouseException {
         try {
             return ( Boolean ) cache.get( "isMemoryEngine", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
@@ -257,12 +254,12 @@ public class Table extends AbstractTable {
         }
     }
 
-    public void truncate() throws ClickHouseException {
+    public void truncate() throws ClickhouseException {
         database.client.execute( buildQuery( TRUNCATE_TABLE_SQL, emptyMap() ), true );
     }
 
     @SuppressWarnings( "unchecked" )
-    public List<ConfigIndex> getIndexes() throws ClickHouseException {
+    public List<ConfigIndex> getIndexes() throws ClickhouseException {
         try {
             return ( List<ConfigIndex> ) cache.get( "getIndexes", () -> {
                 var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );

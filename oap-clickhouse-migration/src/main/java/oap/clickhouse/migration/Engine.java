@@ -24,9 +24,6 @@
 
 package oap.clickhouse.migration;
 
-/**
- * Created by igor.petrenko on 2019-10-29.
- */
 public enum Engine {
     MergeTree( true, true ),
     Memory( false, false ),

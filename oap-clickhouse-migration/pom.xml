@@ -53,8 +53,8 @@
         </dependency>
         <dependency>
             <groupId>oap</groupId>
-            <artifactId>oap-logstream</artifactId>
-            <version>${oap.deps.oap.logstream}</version>
+            <artifactId>oap-tsv</artifactId>
+            <version>${oap.deps.oap.tsv.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

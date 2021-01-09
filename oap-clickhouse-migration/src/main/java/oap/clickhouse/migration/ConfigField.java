@@ -34,9 +34,6 @@ import static oap.clickhouse.migration.FieldType.ENUM;
 import static oap.clickhouse.migration.FieldType.STRING;
 import static oap.clickhouse.migration.FieldType.STRING_ARRAY;
 
-/**
- * Created by igor.petrenko on 24.10.2016.
- */
 @ToString
 public class ConfigField {
     public final String name;

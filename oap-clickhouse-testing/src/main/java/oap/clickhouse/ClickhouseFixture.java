@@ -37,9 +37,6 @@ import static oap.testng.Fixture.Scope.CLASS;
 import static oap.testng.Fixture.Scope.METHOD;
 import static oap.testng.Fixture.Scope.SUITE;
 
-/**
- * Created by igor.petrenko on 2020-12-04.
- */
 public class ClickhouseFixture extends EnvFixture {
     public static final String CLICKHOUSE_HOST = "CLICKHOUSE_HOST";
     public static final String DATABASE_NAME = "DATABASE_NAME";
@@ -61,7 +58,7 @@ public class ClickhouseFixture extends EnvFixture {
         return StringUtils.replaceChars( database + "_" + Teamcity.buildPrefix(), ".-", "_" );
     }
 
-    public static void dropDatabases( ClickHouseClient client ) {
+    public static void dropDatabases( ClickhouseClient client ) {
         String time = DateTime.now().minusDays( 2 ).toString( "YYYY-MM-dd HH:mm:ss" );
         List<String> lines = client
             .useDatabase( "system" )
@@ -101,7 +98,7 @@ public class ClickhouseFixture extends EnvFixture {
 
     public void stop( Scope scope ) {
         if( scope == this.scope ) {
-            var client = new DefaultClickHouseClient( clickhouseHost, 8123, databaseName, Dates.m( 1 ), Dates.m( 1 ) );
+            var client = new DefaultClickhouseClient( clickhouseHost, 8123, databaseName, Dates.m( 1 ), Dates.m( 1 ) );
             dropDatabases( client );
         }
     }

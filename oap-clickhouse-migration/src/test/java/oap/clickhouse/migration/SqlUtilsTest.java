@@ -63,7 +63,7 @@ public class SqlUtilsTest {
     }
 
     @Test
-    public void testAddFieldsToInitQuery_length() throws Exception {
+    public void testAddFieldsToInitQuery_length() {
         var fields = asList(
             new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
             new ConfigField( "AFTER_ID", FieldType.STRING, Optional.of( 5 ), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
@@ -83,7 +83,7 @@ public class SqlUtilsTest {
     }
 
     @Test
-    public void testAddFieldsToInitQuery_enums() throws Exception {
+    public void testAddFieldsToInitQuery_enums() {
         var fields = asList(
             new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
             new ConfigField( "AFTER_ID", FieldType.ENUM, Optional.empty(), Optional.empty(), Optional.of( "test-dictionary" ), Optional.empty(), Optional.of( "id1" ), 0 ),

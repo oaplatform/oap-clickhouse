@@ -31,9 +31,6 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by igor.petrenko on 2020-03-23.
- */
 @ToString
 @EqualsAndHashCode
 public class ConfigIndex {

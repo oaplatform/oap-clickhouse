@@ -55,11 +55,8 @@ import java.util.function.Function;
 import static oap.util.Dates.m;
 import static oap.util.Dates.s;
 
-/**
- * Created by igor.petrenko on 28.02.2018.
- */
 @Slf4j
-public class DefaultClickHouseClient implements ClickHouseClient {
+public class DefaultClickhouseClient implements ClickhouseClient {
     private static final String PUT = "INSERT INTO ${TABLE} ${FIELDS} FORMAT ${FORMAT}";
     private static final String DROP_PARTITION = "ALTER TABLE ${TABLE} DROP PARTITION '${PARTITION}'";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS ${DATABASE}.${TABLE}";
@@ -79,16 +76,16 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     private String user = null;
     private SystemSettings settings;
 
-    public DefaultClickHouseClient( String host, int port, String database ) {
+    public DefaultClickhouseClient( String host, int port, String database ) {
         this( host, port, database, s( 60 ), m( 5 ) );
     }
 
-    public DefaultClickHouseClient( String host, int port, String database, long connectTimeout, long timeout ) {
+    public DefaultClickhouseClient( String host, int port, String database, long connectTimeout, long timeout ) {
         this( host, port, database, -1, -1, -1, "UTF-8",
             connectTimeout, timeout );
     }
 
-    public DefaultClickHouseClient( String host, int port, String database, int maxQuerySize,
+    public DefaultClickhouseClient( String host, int port, String database, int maxQuerySize,
                                     int max_ast_elements, int max_expanded_ast_elements, String charsetName,
                                     long connectTimeout, long timeout ) {
         this( host, port, database, maxQuerySize, max_ast_elements, max_expanded_ast_elements, charsetName,
@@ -96,7 +93,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
             HttpClient.newBuilder().connectTimeout( Duration.ofMillis( connectTimeout ) ).build() );
     }
 
-    public DefaultClickHouseClient( String host, int port, String database, int maxQuerySize,
+    public DefaultClickhouseClient( String host, int port, String database, int maxQuerySize,
                                     int max_ast_elements, int max_expanded_ast_elements, String charsetName,
                                     long timeout,
                                     HttpClient client ) {
@@ -121,7 +118,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     }
 
     @Override
-    public List<String> getLines( String query, boolean useDatabase, long timeout ) throws ClickHouseException {
+    public List<String> getLines( String query, boolean useDatabase, long timeout ) throws ClickhouseException {
         var lines = new ArrayList<String>();
         get( query, lines::add, useDatabase, timeout );
 
@@ -157,13 +154,13 @@ public class DefaultClickHouseClient implements ClickHouseClient {
             List<String> lines;
             do {
                 if( DateTimeUtils.currentTimeMillis() - time > timeout )
-                    throw new ClickHouseException( new TimeoutException() );
+                    throw new ClickhouseException( new TimeoutException() );
                 lines = getLines( "SELECT is_done FROM system.mutations where is_done = 0 AND command = 'DELETE WHERE " + where + "'" );
                 if( lines.isEmpty() ) return;
                 Thread.sleep( 500 );
             } while( true );
         } catch( InterruptedException e ) {
-            throw new ClickHouseException( e );
+            throw new ClickhouseException( e );
         }
 
     }
@@ -217,7 +214,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     }
 
     @Override
-    public int get( String query, Consumer<String> consumer, boolean useDatabase, long timeout ) throws ClickHouseException {
+    public int get( String query, Consumer<String> consumer, boolean useDatabase, long timeout ) throws ClickhouseException {
         var cmd = getSubstitute( null, query, null );
 
         log.trace( "execute {}", cmd );
@@ -237,7 +234,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
 
             return count;
         } catch( IOException e ) {
-            throw new ClickHouseException( e );
+            throw new ClickhouseException( e );
         }
     }
 
@@ -247,14 +244,14 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     }
 
     @Override
-    public ClickHouseClient useDatabase( String database ) {
-        return new DefaultClickHouseClient( host, port, database, maxQuerySize, max_ast_elements,
+    public ClickhouseClient useDatabase( String database ) {
+        return new DefaultClickhouseClient( host, port, database, maxQuerySize, max_ast_elements,
             max_expanded_ast_elements, charsetName, timeout, client );
     }
 
     @Override
-    public ClickHouseClient withUser( String user ) {
-        return new DefaultClickHouseClient( host, port, database, maxQuerySize, max_ast_elements,
+    public ClickhouseClient withUser( String user ) {
+        return new DefaultClickhouseClient( host, port, database, maxQuerySize, max_ast_elements,
             max_expanded_ast_elements, charsetName, timeout, client );
     }
 
@@ -274,7 +271,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     }
 
     @SneakyThrows
-    private ClickhouseStream execute( Query query, String database, long timeout ) throws ClickHouseException {
+    private ClickhouseStream execute( Query query, String database, long timeout ) throws ClickhouseException {
         var process = newProcess( query, database, timeout );
         return process.toStream();
     }
@@ -335,7 +332,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
         private final long timeout;
 
         public ClickhouseProcessHttp( Query query, boolean useDatabase, String user, long timeout ) {
-            this( query, useDatabase ? DefaultClickHouseClient.this.database : null, user, timeout );
+            this( query, useDatabase ? DefaultClickhouseClient.this.database : null, user, timeout );
         }
 
         public ClickhouseProcessHttp( Query query, String database, String user, long timeout ) {
@@ -346,7 +343,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
         }
 
         @Override
-        public ClickhouseStream toStream() throws ClickHouseException {
+        public ClickhouseStream toStream() throws ClickhouseException {
             try {
                 var uriBuilder = new URIBuilder( "http://" + host + ":" + port );
                 if( this.database != null ) uriBuilder.addParameter( "database", this.database );
@@ -377,7 +374,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
                 return new ClickhouseStream( os, http );
 
             } catch( URISyntaxException | IOException e ) {
-                throw new ClickHouseException( e );
+                throw new ClickhouseException( e );
             }
         }
     }

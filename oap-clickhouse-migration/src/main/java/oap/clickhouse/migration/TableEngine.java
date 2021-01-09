@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by igor.petrenko on 2019-10-29.
- */
 public class TableEngine {
     public final Engine engine;
     public final ArrayList<String> orderBy = new ArrayList<>();

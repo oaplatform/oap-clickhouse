@@ -29,9 +29,6 @@ import lombok.ToString;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by igor.petrenko on 2019-10-28.
- */
 @ToString
 public class TableInfo {
     public final List<ConfigField> fields;

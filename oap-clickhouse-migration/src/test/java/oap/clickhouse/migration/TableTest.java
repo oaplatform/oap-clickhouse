@@ -24,7 +24,7 @@
 
 package oap.clickhouse.migration;
 
-import oap.clickhouse.ClickHouseException;
+import oap.clickhouse.ClickhouseException;
 import oap.clickhouse.DataFormat;
 import oap.clickhouse.SystemSettings;
 import oap.clickhouse.migration.Table.TtlInfo;
@@ -58,9 +58,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-/**
- * Created by igor.petrenko on 28.02.2018.
- */
 public class TableTest extends DatabaseTest {
     public static final TableEngine TABLE_ENGINE_MEMORY = new TableEngine( Memory );
     private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
@@ -336,7 +333,7 @@ public class TableTest extends DatabaseTest {
 
         assertThatThrownBy( () -> table.upgrade( List.of(
             build( "ID", STRING ).withDefaultValue( "" ),
-            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) ).isInstanceOf( ClickHouseException.class );
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) ).isInstanceOf( ClickhouseException.class );
     }
 
     @Test
@@ -430,7 +427,7 @@ public class TableTest extends DatabaseTest {
                 build( "ID", STRING ).withDefaultValue( "" ),
                 build( "ID2", STRING, true ).withDefaultValue( "id1" ),
                 build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) )
-        ).isInstanceOf( ClickHouseException.class );
+        ).isInstanceOf( ClickhouseException.class );
     }
 
     @Test

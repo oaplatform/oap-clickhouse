@@ -33,9 +33,6 @@ import java.io.UncheckedIOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Created by igor.petrenko on 02.03.2018.
- */
 public class ClickhouseFixtureTest {
     private static final String HOST = Env.getEnvOrDefault( "CLICKHOUSE_HOST", "localhost" );
 
@@ -44,15 +41,14 @@ public class ClickhouseFixtureTest {
         var counter = new MutableInt();
         var count = 1;
 
-        var clickHouseClient = new DefaultClickHouseClient( HOST, 8123, ClickhouseFixture.testDbName( "db" ), 1048576, 1048576 );
+        var clickHouseClient = new DefaultClickhouseClient( HOST, 8123, ClickhouseFixture.testDbName( "db" ), 1048576, 1048576 );
         clickHouseClient.createDatabase();
         try {
             clickHouseClient.execute( "CREATE TABLE TEST (A INTEGER, B String, C String) ENGINE = MergeTree ORDER BY (A)", true );
             try( var out = clickHouseClient.put( "TEST", DataFormat.TabSeparated ) ) {
                 try {
-                    for( var i = 0; i < count; i++ ) {
+                    for( var i = 0; i < count; i++ )
                         out.write( ( "" + i + "\tskjdfhskdjfdsklfjkdsfh sdkjhg sdkfhg dsjkhg sdkfjg hdskfjgh sdkjgh d\t\n" ).getBytes() );
-                    }
                 } catch( IOException e ) {
                     throw new UncheckedIOException( e );
                 }

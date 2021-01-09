@@ -30,9 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.StringJoiner;
 
-/**
- * Created by igor.petrenko on 2020-12-22.
- */
 @Slf4j
 @ToString
 public class SystemSettings {
@@ -42,7 +39,7 @@ public class SystemSettings {
     private final BooleanParameter preventDestroy = new BooleanParameter( "prevent_destroy", true );
     private final BooleanParameter preventModify = new BooleanParameter( "prevent_modify", true );
 
-    public SystemSettings( ClickHouseClient clickHouseClient ) {
+    public SystemSettings( ClickhouseClient clickHouseClient ) {
         var database = clickHouseClient.getDatabase();
         var table = database.getTable( TABLE_SYSTEM_SETTINGS );
 

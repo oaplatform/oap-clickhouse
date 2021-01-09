@@ -50,9 +50,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-/**
- * Created by igor.petrenko on 2019-10-28.
- */
 public class ClickhouseDatabaseTest extends DatabaseTest {
     private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
     private static final TableEngine TABLE_ENGINE3 = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "ID", "ID2", "ID3", "SOURCE" ), Optional.empty() );

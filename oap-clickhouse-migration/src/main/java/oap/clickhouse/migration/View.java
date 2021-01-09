@@ -31,9 +31,6 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
 
-/**
- * Created by igor.petrenko on 2019-10-28.
- */
 @Slf4j
 public class View extends AbstractTable {
     private static final String CREATE_VIEW_QUERY = "CREATE ${MATERIALIZED} VIEW ${DATABASE}.${TABLE}${TO} ${POPULATE} AS SELECT ${FIELDS}${AGGREGATES} FROM ${DATABASE}.${FROM_TABLE}${WHERE} ${GROUP_BY}";

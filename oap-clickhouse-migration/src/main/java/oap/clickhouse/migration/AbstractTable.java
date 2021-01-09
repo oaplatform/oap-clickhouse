@@ -30,14 +30,13 @@ import com.google.common.cache.CacheBuilder;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import oap.clickhouse.ClickHouseException;
-import oap.logstream.tsv.Tsv;
+import oap.clickhouse.ClickhouseException;
+import oap.tsv.Tsv;
 import oap.util.Lists;
 import oap.util.Strings;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +45,6 @@ import java.util.concurrent.ExecutionException;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 
-/**
- * Created by igor.petrenko on 03.04.2018.
- */
 @Slf4j
 public class AbstractTable {
     public static final String OPTIMIZE_TABLE_SQL = "OPTIMIZE TABLE ${DATABASE}.${TABLE} ${FINAL}";
@@ -90,12 +86,12 @@ public class AbstractTable {
         } );
     }
 
-    public void drop() throws ClickHouseException {
+    public void drop() throws ClickhouseException {
         database.client.execute( buildQuery( DROP_TABLE_SQL, emptyMap() ), true );
         refresh();
     }
 
-    public boolean exists() throws ClickHouseException {
+    public boolean exists() throws ClickhouseException {
         try {
             return ( Boolean ) cache.get( "exists", () -> {
                 var sql = buildQuery( TABLE_EXISTS_SQL, emptyMap() );
@@ -108,9 +104,9 @@ public class AbstractTable {
         }
     }
 
-    protected ClickHouseException getException( ExecutionException e ) {
-        if( e.getCause() instanceof ClickHouseException ) return ( ClickHouseException ) e.getCause();
-        return new ClickHouseException( e.getCause() );
+    protected ClickhouseException getException( ExecutionException e ) {
+        if( e.getCause() instanceof ClickhouseException ) return ( ClickhouseException ) e.getCause();
+        return new ClickhouseException( e.getCause() );
     }
 
     public void refresh() {
@@ -119,7 +115,7 @@ public class AbstractTable {
     }
 
     @SuppressWarnings( "unchecked" )
-    public Map<String, FieldInfo> getFields() throws ClickHouseException {
+    public Map<String, FieldInfo> getFields() throws ClickhouseException {
         try {
             return ( Map<String, FieldInfo> ) cache.get( "getFields", () -> {
                 var fields = new LinkedHashMap<String, FieldInfo>();
@@ -170,8 +166,7 @@ public class AbstractTable {
                 log.trace( "sql = {}", sql );
                 var lines = database.client.getLines( sql, false );
                 Preconditions.checkArgument( lines.size() == 1 );
-                var list = new ArrayList<String>();
-                Tsv.split( lines.get( 0 ), list );
+                var list = Tsv.tsv.parse( lines.get( 0 ) );
                 Preconditions.checkArgument( list.size() == 6 );
 
                 var engine = Engine.valueOf( list.get( 1 ) );

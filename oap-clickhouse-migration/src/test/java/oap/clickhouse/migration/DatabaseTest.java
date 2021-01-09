@@ -24,16 +24,13 @@
 
 package oap.clickhouse.migration;
 
-import oap.clickhouse.DefaultClickHouseClient;
+import oap.clickhouse.DefaultClickhouseClient;
 import oap.system.Env;
 import oap.testng.Teamcity;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-/**
- * Created by igor.petrenko on 2019-10-28.
- */
 public class DatabaseTest {
     public static final String DB = "table_db_" + StringUtils.replaceChars( Teamcity.buildPrefix(), ".-", "_" );
     private static final String HOST = Env.get( "CLICKHOUSE_HOST", "localhost" );
@@ -45,7 +42,7 @@ public class DatabaseTest {
     }
 
     protected void reloadDatabase() {
-        var clickHouseClient = new DefaultClickHouseClient( HOST, 8123, DB );
+        var clickHouseClient = new DefaultClickhouseClient( HOST, 8123, DB );
         clickHouseClient.start();
         database = clickHouseClient.getDatabase();
         database.createIfNotExists();
