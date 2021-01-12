@@ -63,7 +63,7 @@ public class TableTest extends DatabaseTest {
     private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
     @Test
-    public void testUpgrade_Init() {
+    public void testUpgradeInit() {
 
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
@@ -102,7 +102,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testIndex_Update_NewIndex() {
+    public void testIndexUpdateNewIndex() {
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
 
@@ -126,7 +126,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testIndex_Update_DeleteIndex() {
+    public void testIndexUpdateDeleteIndex() {
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
 
@@ -150,7 +150,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testIndex_Update_ModifyIndex() {
+    public void testIndexUpdateModifyIndex() {
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
 
@@ -174,7 +174,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_InitTtl() {
+    public void testUpgradeInitTtl() {
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
 
@@ -187,7 +187,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_Memory_IgnoreInitTtl() {
+    public void testUpgradeMemoryIgnoreInitTtl() {
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
 
@@ -200,7 +200,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_UpdateTtl() {
+    public void testUpgradeUpdateTtl() {
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
 
@@ -238,7 +238,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_Memory_IgnoreUpdateTtl() {
+    public void testUpgradeMemoryIgnoreUpdateTtl() {
         var table = database.getTable( "TEST" );
         assertFalse( table.exists() );
 
@@ -258,7 +258,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_AddField() throws Exception {
+    public void testUpgradeAddField() {
         var table = database.getTable( "TEST" );
 
         table.upgrade( List.of(
@@ -273,7 +273,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_AddField_MemoryEngine() throws Exception {
+    public void testUpgradeAddFieldMemoryEngine() {
 
         var table = database.getTable( "TEST" );
 
@@ -291,7 +291,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testFixAlter_is_not_finished() throws InterruptedException {
+    public void testFixAlterIsNotFinished() throws InterruptedException {
         var executorService = Executors.newFixedThreadPool( 2 );
         try {
             for( var i = 0; i < 100; i++ ) {
@@ -306,10 +306,9 @@ public class TableTest extends DatabaseTest {
                             build( "ID3", STRING ).withDefaultValue( "" ),
                             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
 
-                        assertEventually( 100, 100, () -> {
+                        assertEventually( 100, 100, () ->
                             assertThat( table.getFields().keySet() )
-                                .containsExactly( "ID", "ID2", "ID3", "PARTITIONING_DATE" );
-                        } );
+                                .containsExactly( "ID", "ID2", "ID3", "PARTITIONING_DATE" ) );
                     } );
                 } catch( RejectedExecutionException e ) {
                     Threads.sleepSafely( 100 );
@@ -323,7 +322,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_DropField_Deny() throws Exception {
+    public void testUpgradeDropFieldDeny() {
         var table = database.getTable( "TEST" );
 
         table.upgrade( List.of(
@@ -337,7 +336,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_DropField() throws Exception {
+    public void testUpgradeDropField() {
         setSettings( "prevent_destroy", "false" );
         reloadDatabase();
 
@@ -363,7 +362,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_ModifyField() throws Exception {
+    public void testUpgradeModifyField() {
         setSettings( "prevent_modify", "false" );
         reloadDatabase();
 
@@ -385,7 +384,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgrade_AlterEnum() throws Exception {
+    public void testUpgradeAlterEnum() {
         setSettings( "prevent_modify", "false" );
         reloadDatabase();
 
@@ -414,7 +413,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
-    public void testUpgradeToLowCardinality_preventModify() {
+    public void testUpgradeToLowCardinalityPreventModify() {
         var table = database.getTable( "TEST" );
 
         table.upgrade( List.of(
