@@ -24,7 +24,7 @@
 
 package oap.clickhouse;
 
-import oap.testng.Env;
+import oap.system.Env;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.testng.annotations.Test;
 
@@ -34,7 +34,7 @@ import java.io.UncheckedIOException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClickhouseFixtureTest {
-    private static final String HOST = Env.getEnvOrDefault( "CLICKHOUSE_HOST", "localhost" );
+    private static final String HOST = Env.get( "CLICKHOUSE_HOST", "localhost" );
 
     @Test
     public void test() throws IOException {

@@ -51,7 +51,8 @@ public class ClickhouseFixture extends EnvFixture {
     public ClickhouseFixture( Scope scope, String databaseName ) {
         this.scope = scope;
         this.databaseName = databaseName;
-        this.defineEnv();
+        define( DATABASE_NAME, testDbName( this.databaseName ) );
+        define( CLICKHOUSE_HOST, clickhouseHost );
     }
 
     public static String testDbName( String database ) {
@@ -71,11 +72,6 @@ public class ClickhouseFixture extends EnvFixture {
 
             client.useDatabase( database ).dropDatabase();
         }
-    }
-
-    private void defineEnv() {
-        define( DATABASE_NAME, testDbName( databaseName ) );
-        define( CLICKHOUSE_HOST, clickhouseHost );
     }
 
     @Override
