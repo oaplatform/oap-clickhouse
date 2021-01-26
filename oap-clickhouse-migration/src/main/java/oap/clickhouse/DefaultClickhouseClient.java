@@ -66,9 +66,9 @@ public class DefaultClickhouseClient implements ClickhouseClient {
     public final int port;
     private final String database;
     private final HttpClient client;
-    public int maxQuerySize = -1;
-    public int max_ast_elements = -1;
-    public int max_expanded_ast_elements = -1;
+    public long maxQuerySize = -1;
+    public long max_ast_elements = -1;
+    public long max_expanded_ast_elements = -1;
     public String charsetName = "UTF-8";
     public int chunkSize = 1024 * 1024;
     public long timeout;
@@ -85,16 +85,16 @@ public class DefaultClickhouseClient implements ClickhouseClient {
             connectTimeout, timeout );
     }
 
-    public DefaultClickhouseClient( String host, int port, String database, int maxQuerySize,
-                                    int max_ast_elements, int max_expanded_ast_elements, String charsetName,
+    public DefaultClickhouseClient( String host, int port, String database, long maxQuerySize,
+                                    long max_ast_elements, long max_expanded_ast_elements, String charsetName,
                                     long connectTimeout, long timeout ) {
         this( host, port, database, maxQuerySize, max_ast_elements, max_expanded_ast_elements, charsetName,
             timeout,
             HttpClient.newBuilder().connectTimeout( Duration.ofMillis( connectTimeout ) ).build() );
     }
 
-    public DefaultClickhouseClient( String host, int port, String database, int maxQuerySize,
-                                    int max_ast_elements, int max_expanded_ast_elements, String charsetName,
+    public DefaultClickhouseClient( String host, int port, String database, long maxQuerySize,
+                                    long max_ast_elements, long max_expanded_ast_elements, String charsetName,
                                     long timeout,
                                     HttpClient client ) {
         this.host = host;
