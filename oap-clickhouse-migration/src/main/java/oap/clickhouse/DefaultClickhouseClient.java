@@ -106,6 +106,13 @@ public class DefaultClickhouseClient implements ClickhouseClient {
         this.max_expanded_ast_elements = max_expanded_ast_elements;
         this.charsetName = charsetName;
         this.client = client;
+
+        log.info( "host: {}, port: {}, timeout: {}, maxQuerySize: {}, max_ast_elements: {}, max_expanded_ast_elements: {}, charsetName: {}",
+            host, port, Dates.durationToString( timeout ),
+            FileUtils.byteCountToDisplaySize( maxQuerySize ),
+            max_ast_elements,
+            max_expanded_ast_elements,
+            charsetName );
     }
 
     public void start() {
