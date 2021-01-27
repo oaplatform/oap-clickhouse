@@ -359,6 +359,13 @@ public class TableTest extends DatabaseTest {
 
     private void setSettings( String name, String value ) {
         database.client.execute( "ALTER TABLE " + SystemSettings.TABLE_SYSTEM_SETTINGS + " UPDATE value = '" + value + "' WHERE name = '" + name + "'", true );
+        var lines = List.<String>of();
+        do {
+            lines = database.client.getLines( "SELECT name FROM " + SystemSettings.TABLE_SYSTEM_SETTINGS + " WHERE name = '" + name + "'", true );
+
+            System.out.println( "values = " + lines );
+            Threads.sleepSafely( 100 );
+        } while( lines.size() == 1 && lines.get( 0 ).equals( value ) );
     }
 
     @Test

@@ -47,10 +47,12 @@ import static oap.clickhouse.migration.SqlUtils.addFieldsIndexesToInitQuery;
 @EqualsAndHashCode( callSuper = true )
 @Slf4j
 public class Table extends AbstractTable {
+    public static final Pattern INDEX_GRANULARITY_PATTERN = Pattern.compile( "index_granularity\\s*=\\s*(\\d+)" );
     private static final String CREATE_TABLE_QUERY =
         "SELECT create_table_query FROM system.tables WHERE database = '${DATABASE}' AND name = '${TABLE}' FORMAT TabSeparated";
-
     private static final String TRUNCATE_TABLE_SQL = "TRUNCATE TABLE IF EXISTS ${DATABASE}.${TABLE}";
+    private static final Pattern TTL_PATTERN = Pattern.compile( "\\sTTL\\s([^\\s]+)\\s\\+\\s[^(]+\\((\\d+)\\)" );
+    private static final Pattern INDEX_PATTERN = Pattern.compile( "INDEX\\s+([^\\s(]+)\\s+\\(?(.+?(?=\\)?\\s*TYPE))\\)?\\s*TYPE\\s+([^\\s)]+\\)?)\\s*GRANULARITY\\s+(\\d+)" );
 
     public Table( Database database, String name ) {
         super( database, name );
@@ -63,13 +65,9 @@ public class Table extends AbstractTable {
     public TtlInfo getTtlField() throws ClickhouseException {
         try {
             var getTtlField = ( TtlInfo ) cache.get( "getTtlField", () -> {
-                var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
-                log.trace( "sql = {}", sql );
-                var lines = database.client.getLines( sql );
-                if( lines.isEmpty() ) return null;
+                var createTableSql = getCreateTableSql();
 
-                var TTL_PATTERN = Pattern.compile( "\\sTTL\\s([^\\s]+)\\s\\+\\s[^(]+\\((\\d+)\\)" );
-                var matcher = TTL_PATTERN.matcher( lines.get( 0 ) );
+                var matcher = TTL_PATTERN.matcher( createTableSql );
                 if( matcher.find() ) return new TtlInfo( matcher.group( 1 ), Integer.parseInt( matcher.group( 2 ) ) );
 
                 return TtlInfo.NULL;
@@ -80,16 +78,23 @@ public class Table extends AbstractTable {
         }
     }
 
+    private String getCreateTableSql() throws ExecutionException {
+        var createTableSql = ( String ) cache.get( "createTableSql", () -> {
+            var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
+            log.trace( "sql = {}", sql );
+            var lines = database.client.getLines( sql );
+            if( lines.isEmpty() ) return "";
+            return lines.get( 0 );
+        } );
+        return createTableSql;
+    }
+
     public int getIndexGranularity() throws ClickhouseException {
         try {
             return ( Integer ) cache.get( "getIndexGranularity", () -> {
-                var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
-                log.trace( "sql = {}", sql );
-                var lines = database.client.getLines( sql );
-                if( lines.isEmpty() ) return -1;
+                var createTableSql = getCreateTableSql();
 
-                var index_granularity_PATTERN = Pattern.compile( "index_granularity\\s*=\\s*(\\d+)" );
-                var matcher = index_granularity_PATTERN.matcher( lines.get( 0 ) );
+                var matcher = INDEX_GRANULARITY_PATTERN.matcher( createTableSql );
                 if( matcher.find() ) return Integer.parseInt( matcher.group( 1 ) );
 
                 return -1;
@@ -205,6 +210,8 @@ public class Table extends AbstractTable {
                 }
 
                 var tableIndexes = getIndexes();
+                log.debug( "indexes = {}", tableIndexes );
+
                 for( var index : tableIndexes ) {
                     var found = Lists.find2( indexes, in -> in.name.equals( index.name ) );
                     if( index.equals( found ) ) continue;
@@ -216,7 +223,9 @@ public class Table extends AbstractTable {
                     modified = true;
                 }
 
+                refresh();
                 tableIndexes = getIndexes();
+                log.debug( "indexes = {}", tableIndexes );
                 for( var index : indexes ) {
                     if( Lists.find2( tableIndexes, ti -> ti.name.equals( index.name ) ) != null ) continue;
 
@@ -236,15 +245,10 @@ public class Table extends AbstractTable {
     public boolean isMemoryEngine() throws ClickhouseException {
         try {
             return ( Boolean ) cache.get( "isMemoryEngine", () -> {
-                var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
-                log.trace( "sql = {}", sql );
-                var lines = database.client.getLines( sql );
-                if( lines.size() != 1 ) {
-                    return false;
-                }
+                var createTableSql = getCreateTableSql();
 
                 var memoryEngine =
-                    Pattern.compile( "\\s*Engine\\s*=\\s*memory", Pattern.CASE_INSENSITIVE ).matcher( lines.get( 0 ) ).find()
+                    Pattern.compile( "\\s*Engine\\s*=\\s*memory", Pattern.CASE_INSENSITIVE ).matcher( createTableSql ).find()
                         ? 1 : 0;
 
                 return memoryEngine == 1;
@@ -262,15 +266,11 @@ public class Table extends AbstractTable {
     public List<ConfigIndex> getIndexes() throws ClickhouseException {
         try {
             return ( List<ConfigIndex> ) cache.get( "getIndexes", () -> {
-                var sql = buildQuery( CREATE_TABLE_QUERY, emptyMap() );
-                log.trace( "sql = {}", sql );
-                var lines = database.client.getLines( sql );
-                if( lines.isEmpty() ) return null;
+                var createTableSql = getCreateTableSql();
 
                 var res = new ArrayList<ConfigIndex>();
 
-                var INDEX_PATTERN = Pattern.compile( "INDEX\\s+([^\\s(]+)\\s+\\(?(.+?(?=\\)?\\s*TYPE))\\)?\\s*TYPE\\s+([^\\s)]+\\)?)\\s*GRANULARITY\\s+(\\d+)" );
-                var matcher = INDEX_PATTERN.matcher( lines.get( 0 ) );
+                var matcher = INDEX_PATTERN.matcher( createTableSql );
                 while( matcher.find() ) {
                     var name = matcher.group( 1 );
                     var fieldsStr = matcher.group( 2 );
@@ -280,7 +280,6 @@ public class Table extends AbstractTable {
 
                     res.add( ConfigIndex.index( name, fields, type, Integer.parseInt( granularity ) ) );
                 }
-//        if( matcher.find() ) return new TtlInfo( matcher.group( 1 ), Integer.parseInt( matcher.group( 2 ) ) );
 
                 return res;
             } );
