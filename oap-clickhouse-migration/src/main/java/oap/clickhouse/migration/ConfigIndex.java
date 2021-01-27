@@ -51,6 +51,14 @@ public class ConfigIndex {
         return set( 0 );
     }
 
+    public static String bloom_filter( double falsePositive ) {
+        return "bloom_filter(" + falsePositive + ")";
+    }
+
+    public static String bloom_filter() {
+        return "bloom_filter()";
+    }
+
     public static String minmax() {
         return "minmax";
     }
@@ -60,7 +68,12 @@ public class ConfigIndex {
     }
 
     public static ConfigIndex index( String name, List<String> fields, String type, int granularity ) {
-        return new ConfigIndex( name, fields, type, granularity );
+        return new ConfigIndex( name, fields, fixType( type ), granularity );
+    }
+
+    private static String fixType( String type ) {
+        if( "bloom_filter".equals( type ) ) return "bloom_filter()";
+        return type;
     }
 
     public String getIndexSql() {

@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import static oap.clickhouse.migration.ConfigField.build;
 import static oap.clickhouse.migration.ConfigField.buildEnum;
 import static oap.clickhouse.migration.ConfigField.buildFixedString;
+import static oap.clickhouse.migration.ConfigIndex.bloom_filter;
 import static oap.clickhouse.migration.ConfigIndex.index;
 import static oap.clickhouse.migration.ConfigIndex.set;
 import static oap.clickhouse.migration.Engine.Memory;
@@ -158,7 +159,10 @@ public class TableTest extends DatabaseTest {
             build( "ID", STRING ).withDefaultValue( "" ),
             build( "ID2", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ),
-            List.of( index( "ID_ID2", List.of( "ID", "ID2" ), set(), 1 ) ),
+            List.of( 
+                index( "ID_ID2", List.of( "ID", "ID2" ), set(), 1 ), 
+                index( "ID_ID2_bf", List.of( "ID", "ID2" ), bloom_filter(), 1 ) 
+            ),
             TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) )
         );
 
@@ -166,11 +170,17 @@ public class TableTest extends DatabaseTest {
             build( "ID", STRING ).withDefaultValue( "" ),
             build( "ID2", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ),
-            List.of( index( "ID_ID2", List.of( "ID" ), set(), 1 ) ),
+            List.of( 
+                index( "ID_ID2", List.of( "ID" ), set(), 1 ),
+                index( "ID_ID2_bf", List.of( "ID", "ID2" ), bloom_filter(), 1 )
+            ),
             TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) )
         );
         assertTrue( table.exists() );
-        assertThat( table.getIndexes() ).containsOnlyOnce( index( "ID_ID2", List.of( "ID" ), set(), 1 ) );
+        assertThat( table.getIndexes() ).containsOnly(
+            index( "ID_ID2", List.of( "ID" ), set(), 1 ),
+            index( "ID_ID2_bf", List.of( "ID", "ID2" ), bloom_filter(), 1 )
+        );
     }
 
     @Test
