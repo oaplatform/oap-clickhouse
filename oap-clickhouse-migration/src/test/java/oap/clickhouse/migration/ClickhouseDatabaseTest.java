@@ -51,8 +51,8 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class ClickhouseDatabaseTest extends DatabaseTest {
-    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
-    private static final TableEngine TABLE_ENGINE3 = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "ID", "ID2", "ID3", "SOURCE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "PARTITIONING_DATE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE3 = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "ID", "ID2", "ID3", "SOURCE" ), Optional.empty() );
 
     @Test
     public void testUpgradeInitTable() {
@@ -120,7 +120,7 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
 
     @Test
     public void testViewByDateTimeFunction() {
-        var tableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
+        var tableEngine = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "DATETIME", "SOURCE" ), Optional.empty() );
         database.upgrade( List.of( new TableInfo(
             "TEST",
             List.of(
@@ -147,7 +147,7 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
 
     @Test
     public void testViewWithCustomPK() {
-        var tableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
+        var tableEngine = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "DATETIME", "SOURCE" ), Optional.empty() );
         database.upgrade( List.of( new TableInfo(
             "TEST",
             List.of(
@@ -171,7 +171,7 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
 
     @Test
     public void testViewWithWhere() {
-        var tableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
+        var tableEngine = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "DATETIME", "SOURCE" ), Optional.empty() );
         database.upgrade( List.of( new TableInfo(
             "TEST",
             List.of(
@@ -196,7 +196,7 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
     @Test
     public void testMemoryTableToViewToTable() {
         var fromTableEngine = new TableEngine( Memory );
-        var toTableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME" ), Optional.empty() );
+        var toTableEngine = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "DATETIME" ), Optional.empty() );
 
         database.upgrade( List.of(
             new TableInfo(

@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class DefaultClickhouseClientTest {
-    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
     private static final String HOST = Env.get( "CLICKHOUSE_HOST", "localhost" );
     private static final int PORT = 8123;

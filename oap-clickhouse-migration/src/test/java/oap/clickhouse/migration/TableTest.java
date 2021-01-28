@@ -61,7 +61,7 @@ import static org.testng.Assert.assertTrue;
 
 public class TableTest extends DatabaseTest {
     public static final TableEngine TABLE_ENGINE_MEMORY = new TableEngine( Memory );
-    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, List.of("PARTITIONING_DATE"), List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
     @Test
     public void testUpgradeInit() {
@@ -522,7 +522,7 @@ public class TableTest extends DatabaseTest {
 
         assertTrue( table.upgrade( List.of( build( "ID", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(),
-            new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.of( 1024 ) ), Map.of(), false, Dates.m( 10 ) ) );
+            new TableEngine( MergeTree, List.of("PARTITIONING_DATE"), List.of( "PARTITIONING_DATE" ), Optional.of( 1024 ) ), Map.of(), false, Dates.m( 10 ) ) );
         assertThat( table.getIndexGranularity() ).isEqualTo( 1024 );
 
 
