@@ -141,7 +141,7 @@ public class AbstractTable {
                     var is_in_sampling_key = "1".equals( cols[8] );
 
                     fields.put( name, new FieldInfo( name, type, default_type, default_expression,
-                        "", compression_codec,
+                        compression_codec,
                         is_in_partition_key, is_in_sorting_key,
                         is_in_primary_key, is_in_sampling_key ) );
                 }
@@ -207,8 +207,7 @@ public class AbstractTable {
         public final String type;
         public final String default_kind;
         public final String default_expression;
-        public final String codec;
-        public final String compression;
+        public final String compression_codec;
         public final boolean is_in_partition_key;
         public final boolean is_in_sorting_key;
         public final boolean is_in_primary_key;

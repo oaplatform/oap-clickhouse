@@ -485,7 +485,7 @@ public class TableTest extends DatabaseTest {
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) );
 
 
-        assertThat( table.getFields().values() ).extracting( tf -> tf.compression )
+        assertThat( table.getFields().values() ).extracting( tf -> tf.compression_codec )
             .containsExactly( "CODEC(ZSTD(1))", "" );
 
         assertTrue( table.upgrade( List.of(
@@ -493,7 +493,7 @@ public class TableTest extends DatabaseTest {
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) );
 
 
-        assertThat( table.getFields().values() ).extracting( tf -> tf.compression )
+        assertThat( table.getFields().values() ).extracting( tf -> tf.compression_codec )
             .containsExactly( "CODEC(DoubleDelta, ZSTD(1))", "" );
     }
 

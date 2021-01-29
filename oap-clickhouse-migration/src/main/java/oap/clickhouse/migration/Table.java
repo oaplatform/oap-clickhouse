@@ -176,11 +176,11 @@ public class Table extends AbstractTable {
             for( var cf : fields ) {
                 var tableField = tableFields.get( cf.name );
                 if( tableField != null ) {
-                    if( !cf.typeEquals( tableField.type, tableField.codec ) ) {
+                    if( !cf.typeEquals( tableField.type, tableField.compression_codec ) ) {
                         log.trace( "modify field {}, type: {} -> {}, codec: {} -> {}",
                             cf.name,
                             tableField.type, cf.type.toClickhouseType( cf.length, cf.enumName, cf.lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ),
-                            cf.codec, tableField.codec );
+                            cf.codec, tableField.compression_codec );
 
                         if( database.settings.isPreventModify() ) {
                             throw new ClickhouseException( "field '" + tableField.name + "' cannot be modified", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_modify has set" );
