@@ -43,14 +43,21 @@ public class ConfigField {
     public final Optional<String> materialized;
     public final Optional<Object> defaultValue;
     public final Optional<Boolean> lowCardinality;
+    public final String codec;
     public final int ttl;
 
-    public ConfigField( String name, FieldType type, Optional<? extends Number> length, Optional<Boolean> lowCardinality, Optional<String> enumName,
+    public ConfigField( String name, FieldType type, Optional<? extends Number> length,
+                        Optional<Boolean> lowCardinality,
+                        String codec,
+                        Optional<String> enumName,
                         Optional<String> materialized, Optional<Object> defaultValue, int ttl ) {
+        Preconditions.checkNotNull( codec );
+
         this.name = name;
         this.type = type;
         this.length = length.map( Number::intValue );
         this.lowCardinality = lowCardinality;
+        this.codec = codec.trim();
         this.enumName = enumName;
         this.materialized = materialized;
         this.defaultValue = defaultValue;
@@ -63,11 +70,12 @@ public class ConfigField {
 
     public static ConfigField build( String name, FieldType type, boolean lowCardinality ) {
         return new ConfigField( name, type, Optional.empty(), lowCardinality ? Optional.of( true ) : Optional.empty(),
+            "",
             Optional.empty(), Optional.empty(), Optional.empty(), 0 );
     }
 
     public static ConfigField buildEnum( String name, String enumType ) {
-        return new ConfigField( name, ENUM, Optional.empty(), Optional.empty(), Optional.of( enumType ), Optional.empty(), Optional.empty(), 0 );
+        return new ConfigField( name, ENUM, Optional.empty(), Optional.empty(), "", Optional.of( enumType ), Optional.empty(), Optional.empty(), 0 );
     }
 
     public static ConfigField buildFixedString( String name, int length ) {
@@ -76,22 +84,27 @@ public class ConfigField {
 
     public static ConfigField buildFixedString( String name, int length, boolean lowCardinality ) {
         return new ConfigField( name, STRING, Optional.of( length ),
-            lowCardinality ? Optional.of( true ) : Optional.empty(),
+            lowCardinality ? Optional.of( true ) : Optional.empty(), "",
             Optional.empty(), Optional.empty(), Optional.empty(), 0 );
     }
 
     public static ConfigField buildFixedArrayString( String name, int length ) {
-        return new ConfigField( name, STRING_ARRAY, Optional.of( length ), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), 0 );
+        return new ConfigField( name, STRING_ARRAY, Optional.of( length ), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.empty(), 0 );
     }
 
     public ConfigField withTtl( int ttl ) {
         Preconditions.checkArgument( ttl > 0 );
 
-        return new ConfigField( name, type, length, lowCardinality, enumName, materialized, defaultValue, ttl );
+        return new ConfigField( name, type, length, lowCardinality, codec, enumName, materialized, defaultValue, ttl );
     }
 
     public ConfigField withDefaultValue( Object defaultValue ) {
-        return new ConfigField( name, type, length, lowCardinality, enumName, materialized, Optional.of( defaultValue ), ttl );
+        return new ConfigField( name, type, length, lowCardinality, codec, enumName, materialized, Optional.of( defaultValue ), ttl );
+    }
+
+    public ConfigField withCodec( String codec ) {
+        return new ConfigField( name, type, length, lowCardinality, codec,
+            enumName, materialized, defaultValue, ttl );
     }
 
     String getAddSql() {
@@ -101,7 +114,8 @@ public class ConfigField {
     String getColumnSql() {
         return name + ' ' + type.toClickhouseType( length, enumName, lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ) + materialized
             .map( m -> " MATERIALIZED " + m )
-            .orElse( defaultValue.map( dv -> " DEFAULT " + valueToSql( dv ) ).orElse( "" ) );
+            .orElse( defaultValue.map( dv -> " DEFAULT " + valueToSql( dv ) ).orElse( "" ) )
+            + ( codec.isEmpty() ? "" : " " + codec );
     }
 
     private String valueToSql( Object defaultValue ) {
@@ -118,7 +132,8 @@ public class ConfigField {
         return "ALTER TABLE ${DATABASE}.${TABLE} MODIFY COLUMN " + getColumnSql();
     }
 
-    public boolean typeEquals( String type ) {
-        return this.type.toClickhouseType( length, enumName, lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ).equals( type );
+    public boolean typeEquals( String type, String codec ) {
+        return this.type.toClickhouseType( length, enumName, lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ).equals( type )
+            && this.codec.equals( codec );
     }
 }

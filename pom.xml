@@ -49,7 +49,7 @@
     </repositories>
 
     <properties>
-        <oap.project.clickhouse.version>8.4.0</oap.project.clickhouse.version>
+        <oap.project.clickhouse.version>8.5.0</oap.project.clickhouse.version>
 
         <oap.deps.oap.version>8.5.2</oap.deps.oap.version>
         <oap.deps.oap.tsv.version>2.0.4</oap.deps.oap.tsv.version>

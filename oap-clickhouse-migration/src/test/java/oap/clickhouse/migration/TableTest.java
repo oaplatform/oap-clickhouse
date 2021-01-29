@@ -50,6 +50,7 @@ import static oap.clickhouse.migration.Engine.Memory;
 import static oap.clickhouse.migration.Engine.MergeTree;
 import static oap.clickhouse.migration.FieldType.DATE;
 import static oap.clickhouse.migration.FieldType.DATETIME;
+import static oap.clickhouse.migration.FieldType.LONG;
 import static oap.clickhouse.migration.FieldType.STRING;
 import static oap.clickhouse.migration.FieldType.UNSIGNED_INTEGER;
 import static oap.testng.Asserts.assertEventually;
@@ -61,7 +62,7 @@ import static org.testng.Assert.assertTrue;
 
 public class TableTest extends DatabaseTest {
     public static final TableEngine TABLE_ENGINE_MEMORY = new TableEngine( Memory );
-    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, List.of("PARTITIONING_DATE"), List.of( "PARTITIONING_DATE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
     @Test
     public void testUpgradeInit() {
@@ -159,9 +160,9 @@ public class TableTest extends DatabaseTest {
             build( "ID", STRING ).withDefaultValue( "" ),
             build( "ID2", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ),
-            List.of( 
-                index( "ID_ID2", List.of( "ID", "ID2" ), set(), 1 ), 
-                index( "ID_ID2_bf", List.of( "ID", "ID2" ), bloom_filter(), 1 ) 
+            List.of(
+                index( "ID_ID2", List.of( "ID", "ID2" ), set(), 1 ),
+                index( "ID_ID2_bf", List.of( "ID", "ID2" ), bloom_filter(), 1 )
             ),
             TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) )
         );
@@ -170,7 +171,7 @@ public class TableTest extends DatabaseTest {
             build( "ID", STRING ).withDefaultValue( "" ),
             build( "ID2", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ),
-            List.of( 
+            List.of(
                 index( "ID_ID2", List.of( "ID" ), set(), 1 ),
                 index( "ID_ID2_bf", List.of( "ID", "ID2" ), bloom_filter(), 1 )
             ),
@@ -473,6 +474,30 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
+    public void testCodec() {
+        setSettings( "prevent_modify", "false" );
+        reloadDatabase();
+
+        var table = database.getTable( "TEST" );
+
+        assertTrue( table.upgrade( List.of(
+            build( "ID", LONG ).withDefaultValue( 0L ).withCodec( "CODEC(ZSTD(1))" ),
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) );
+
+
+        assertThat( table.getFields().values() ).extracting( tf -> tf.compression )
+            .containsExactly( "CODEC(ZSTD(1))", "" );
+
+        assertTrue( table.upgrade( List.of(
+            build( "ID", LONG ).withDefaultValue( 0L ).withCodec( "CODEC(DoubleDelta,ZSTD(1))" ),
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) ) );
+
+
+        assertThat( table.getFields().values() ).extracting( tf -> tf.compression )
+            .containsExactly( "CODEC(DoubleDelta, ZSTD(1))", "" );
+    }
+
+    @Test
     public void testNoReorderFields() {
         var table = database.getTable( "TEST" );
 
@@ -522,7 +547,7 @@ public class TableTest extends DatabaseTest {
 
         assertTrue( table.upgrade( List.of( build( "ID", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(),
-            new TableEngine( MergeTree, List.of("PARTITIONING_DATE"), List.of( "PARTITIONING_DATE" ), Optional.of( 1024 ) ), Map.of(), false, Dates.m( 10 ) ) );
+            new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "PARTITIONING_DATE" ), Optional.of( 1024 ) ), Map.of(), false, Dates.m( 10 ) ) );
         assertThat( table.getIndexGranularity() ).isEqualTo( 1024 );
 
 

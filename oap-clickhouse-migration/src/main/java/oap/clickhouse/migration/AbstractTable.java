@@ -56,7 +56,8 @@ public class AbstractTable {
     private static final String DROP_TABLE_SQL = "DROP TABLE IF EXISTS ${DATABASE}.${TABLE}";
 
     private static final String FIELDS_QUERY =
-        "SELECT name, type, default_kind, default_expression, is_in_partition_key, is_in_sorting_key, is_in_primary_key, is_in_sampling_key "
+        "SELECT name, type, default_kind, default_expression, compression_codec, "
+            + "is_in_partition_key, is_in_sorting_key, is_in_primary_key, is_in_sampling_key "
             + "FROM system.columns "
             + "WHERE database = '${DATABASE}' AND table = '${TABLE}' FORMAT TabSeparatedRaw";
     protected final Cache<String, Object> cache = CacheBuilder
@@ -133,12 +134,15 @@ public class AbstractTable {
                     var type = cols[1];
                     var default_type = cols[2];
                     var default_expression = cols[3];
-                    var is_in_partition_key = "1".equals( cols[4] );
-                    var is_in_sorting_key = "1".equals( cols[5] );
-                    var is_in_primary_key = "1".equals( cols[6] );
-                    var is_in_sampling_key = "1".equals( cols[7] );
+                    var compression_codec = cols[4];
+                    var is_in_partition_key = "1".equals( cols[5] );
+                    var is_in_sorting_key = "1".equals( cols[6] );
+                    var is_in_primary_key = "1".equals( cols[7] );
+                    var is_in_sampling_key = "1".equals( cols[8] );
 
-                    fields.put( name, new FieldInfo( name, type, default_type, default_expression, is_in_partition_key, is_in_sorting_key,
+                    fields.put( name, new FieldInfo( name, type, default_type, default_expression,
+                        "", compression_codec,
+                        is_in_partition_key, is_in_sorting_key,
                         is_in_primary_key, is_in_sampling_key ) );
                 }
 
@@ -203,6 +207,8 @@ public class AbstractTable {
         public final String type;
         public final String default_kind;
         public final String default_expression;
+        public final String codec;
+        public final String compression;
         public final boolean is_in_partition_key;
         public final boolean is_in_sorting_key;
         public final boolean is_in_primary_key;

@@ -37,17 +37,17 @@ public class SqlUtilsTest {
     @Test
     public void testAddFieldsToInitQuery() {
         var fields = List.of(
-            new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
-            new ConfigField( "AFTER_ID", FieldType.STRING, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
-            new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 ),
-            new ConfigField( "AFTER_PARTITIONING_DATE", FieldType.STRING, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
-            new ConfigField( "TEST_TIME", FieldType.DATETIME, Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "now()" ), Optional.of( "2019-09-23 00:00:00" ), 0 ),
-            new ConfigField( "TIME", FieldType.DATETIME, Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "now()" ), Optional.of( "2019-09-23 00:00:00" ), 0 ),
-            new ConfigField( "TIME2", FieldType.DATETIME, Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "now()" ), Optional.of( "2019-09-23 00:00:00" ), 0 ),
-            new ConfigField( "LC", FieldType.STRING, Optional.empty(), Optional.of( true ), Optional.empty(), Optional.empty(), Optional.of( "V" ), 0 )
+            new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
+            new ConfigField( "AFTER_ID", FieldType.STRING, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
+            new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 ),
+            new ConfigField( "AFTER_PARTITIONING_DATE", FieldType.STRING, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
+            new ConfigField( "TEST_TIME", FieldType.DATETIME, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.of( "now()" ), Optional.of( "2019-09-23 00:00:00" ), 0 ),
+            new ConfigField( "TIME", FieldType.DATETIME, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.of( "now()" ), Optional.of( "2019-09-23 00:00:00" ), 0 ),
+            new ConfigField( "TIME2", FieldType.DATETIME, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.of( "now()" ), Optional.of( "2019-09-23 00:00:00" ), 0 ),
+            new ConfigField( "LC", FieldType.STRING, Optional.empty(), Optional.of( true ), "", Optional.empty(), Optional.empty(), Optional.of( "V" ), 0 )
         );
 
-        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, List.of("PARTITIONING_DATE"), List.of( "ID" ), Optional.empty() ), fields, List.of() );
+        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "ID" ), Optional.empty() ), fields, List.of() );
 
         assertString( sql ).isEqualTo( """
             CREATE TABLE ${TABLE}${THREAD_IDX} (
@@ -65,13 +65,14 @@ public class SqlUtilsTest {
     @Test
     public void testAddFieldsToInitQuery_length() {
         var fields = asList(
-            new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
-            new ConfigField( "AFTER_ID", FieldType.STRING, Optional.of( 5 ), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
-            new ConfigField( "AFTER_AFTER_ID", FieldType.STRING, Optional.of( 6 ), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
-            new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 )
+            new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
+            new ConfigField( "AFTER_ID", FieldType.STRING, Optional.of( 5 ), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
+            new ConfigField( "AFTER_AFTER_ID", FieldType.STRING, Optional.of( 6 ), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
+            new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 )
         );
 
-        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, List.of("PARTITIONING_DATE"), List.of( "ID" ), Optional.empty() ), fields, List.of() );
+        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree,
+            List.of( "PARTITIONING_DATE" ), List.of( "ID" ), Optional.empty() ), fields, List.of() );
 
         assertString( sql ).isEqualTo( """
             CREATE TABLE ${TABLE}${THREAD_IDX} (
@@ -85,13 +86,13 @@ public class SqlUtilsTest {
     @Test
     public void testAddFieldsToInitQuery_enums() {
         var fields = asList(
-            new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
-            new ConfigField( "AFTER_ID", FieldType.ENUM, Optional.empty(), Optional.empty(), Optional.of( "test-dictionary" ), Optional.empty(), Optional.of( "id1" ), 0 ),
-            new ConfigField( "AFTER_AFTER_ID", FieldType.ENUM, Optional.empty(), Optional.empty(), Optional.of( "test-dictionary" ), Optional.empty(), Optional.of( "id1" ), 0 ),
-            new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 )
+            new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
+            new ConfigField( "AFTER_ID", FieldType.ENUM, Optional.empty(), Optional.empty(), "", Optional.of( "test-dictionary" ), Optional.empty(), Optional.of( "id1" ), 0 ),
+            new ConfigField( "AFTER_AFTER_ID", FieldType.ENUM, Optional.empty(), Optional.empty(), "", Optional.of( "test-dictionary" ), Optional.empty(), Optional.of( "id1" ), 0 ),
+            new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 )
         );
 
-        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, List.of("PARTITIONING_DATE"), List.of( "ID" ), Optional.empty() ), fields, List.of() );
+        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "ID" ), Optional.empty() ), fields, List.of() );
 
         assertString( sql ).isEqualTo( """
             CREATE TABLE ${TABLE}${THREAD_IDX} (
