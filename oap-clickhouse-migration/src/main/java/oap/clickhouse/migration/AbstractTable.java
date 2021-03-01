@@ -169,6 +169,7 @@ public class AbstractTable {
                 var sql = buildQuery( TABLE_EXISTS_SQL, emptyMap() );
                 log.trace( "sql = {}", sql );
                 var lines = database.client.getLines( sql, false );
+                Preconditions.checkNotNull( lines );
                 Preconditions.checkArgument( lines.size() == 1 );
                 var list = Tsv.tsv.parse( lines.get( 0 ) );
                 Preconditions.checkArgument( list.size() == 6 );
