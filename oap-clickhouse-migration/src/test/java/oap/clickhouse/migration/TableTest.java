@@ -368,6 +368,28 @@ public class TableTest extends DatabaseTest {
         assertThat( lines ).containsExactly( "true" );
     }
 
+    @Test
+    public void testUpgradeReorderFields() {
+        var table = database.getTable( "TEST" );
+
+        table.upgrade( List.of(
+            build( "ID", STRING ).withDefaultValue( "" ),
+            build( "ID2", STRING ).withDefaultValue( "" ),
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
+
+        assertThat( table.getFields().keySet() ).containsExactly( "ID", "ID2", "PARTITIONING_DATE" );
+
+        setSettings( "prevent_modify", "false" );
+        reloadDatabase();
+
+        table.upgrade( List.of(
+            build( "ID2", STRING ).withDefaultValue( "" ),
+            build( "ID", STRING ).withDefaultValue( "" ),
+            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
+
+        assertThat( table.getFields().keySet() ).containsExactly( "ID2", "ID", "PARTITIONING_DATE" );
+    }
+    
     private void setSettings( String name, String value ) {
         database.client.execute( "ALTER TABLE " + SystemSettings.TABLE_SYSTEM_SETTINGS + " UPDATE value = '" + value + "' WHERE name = '" + name + "'", true );
         var lines = List.<String>of();
@@ -495,27 +517,6 @@ public class TableTest extends DatabaseTest {
 
         assertThat( table.getFields().values() ).extracting( tf -> tf.compression_codec )
             .containsExactly( "CODEC(DoubleDelta, ZSTD(1))", "" );
-    }
-
-    @Test
-    public void testNoReorderFields() {
-        var table = database.getTable( "TEST" );
-
-        table.upgrade( List.of(
-            build( "ID", STRING ).withDefaultValue( "" ),
-            build( "ID2", STRING ).withDefaultValue( "" ),
-            build( "ID3", STRING ).withDefaultValue( "" ),
-            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
-
-        assertThat( table.getFields().keySet() ).containsExactly( "ID", "ID2", "ID3", "PARTITIONING_DATE" );
-
-        table.upgrade( List.of(
-            build( "ID", STRING ).withDefaultValue( "" ),
-            build( "ID3", STRING ).withDefaultValue( "" ),
-            build( "ID2", STRING ).withDefaultValue( "" ),
-            build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
-
-        assertThat( table.getFields().keySet() ).containsExactly( "ID", "ID2", "ID3", "PARTITIONING_DATE" );
     }
 
     @Test

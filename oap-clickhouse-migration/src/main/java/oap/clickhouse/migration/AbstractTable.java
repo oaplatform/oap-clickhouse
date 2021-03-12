@@ -116,9 +116,9 @@ public class AbstractTable {
     }
 
     @SuppressWarnings( "unchecked" )
-    public Map<String, FieldInfo> getFields() throws ClickhouseException {
+    public LinkedHashMap<String, FieldInfo> getFields() throws ClickhouseException {
         try {
-            return ( Map<String, FieldInfo> ) cache.get( "getFields", () -> {
+            return ( LinkedHashMap<String, FieldInfo> ) cache.get( "getFields", () -> {
                 var fields = new LinkedHashMap<String, FieldInfo>();
 
                 var sql = buildQuery( FIELDS_QUERY, Map.of() );

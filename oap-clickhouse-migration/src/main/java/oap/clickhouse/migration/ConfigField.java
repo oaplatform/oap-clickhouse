@@ -108,7 +108,7 @@ public class ConfigField {
     }
 
     String getAddSql() {
-        return "ALTER TABLE ${DATABASE}.${TABLE} ADD COLUMN " + getColumnSql() + " AFTER ${AFTER}";
+        return "ALTER TABLE ${DATABASE}.${TABLE} ADD COLUMN " + getColumnSql() + "${AFTER_OR_FIRST}";
     }
 
     String getColumnSql() {
@@ -129,7 +129,7 @@ public class ConfigField {
     }
 
     public String getModifySql() {
-        return "ALTER TABLE ${DATABASE}.${TABLE} MODIFY COLUMN " + getColumnSql();
+        return "ALTER TABLE ${DATABASE}.${TABLE} MODIFY COLUMN " + getColumnSql() + "${AFTER_OR_FIRST}";
     }
 
     public boolean typeEquals( String type, String codec ) {

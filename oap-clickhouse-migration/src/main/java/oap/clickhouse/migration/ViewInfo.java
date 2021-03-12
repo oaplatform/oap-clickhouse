@@ -71,7 +71,7 @@ public class ViewInfo {
     }
 
     public boolean equalFields( Collection<String> fields, Collection<AggregatorFunction> aggregates ) {
-        return new HashSet<>( fields ).equals( new HashSet<>( this.fields ) )
+        return new HashSet<>( fields ).equals( new HashSet<>( Lists.map( this.fields, f -> f.name ) ) )
             && new HashSet<>( aggregates ).equals( new HashSet<>( this.aggregates ) );
     }
 
@@ -96,20 +96,20 @@ public class ViewInfo {
             this.alias = alias;
         }
 
-        public String getFieldWithAlias() {
-            return name + ( alias != null ? " AS " + alias : "" );
-        }
-
-        public String getFieldName() {
-            return alias != null ? alias : name;
-        }
-
         public static Field of( String name, String alias ) {
             return new Field( name, alias );
         }
 
         public static Field of( String name ) {
             return of( name, null );
+        }
+
+        public String getFieldWithAlias() {
+            return name + ( alias != null ? " AS " + alias : "" );
+        }
+
+        public String getFieldName() {
+            return alias != null ? alias : name;
         }
     }
 

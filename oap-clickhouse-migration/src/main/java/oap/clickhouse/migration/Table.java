@@ -34,14 +34,15 @@ import oap.util.Lists;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyMap;
-import static java.util.stream.Collectors.toMap;
 import static oap.clickhouse.migration.SqlUtils.addFieldsIndexesToInitQuery;
+import static oap.util.Collectors.toLinkedHashMap;
 
 @ToString( callSuper = true )
 @EqualsAndHashCode( callSuper = true )
@@ -136,61 +137,16 @@ public class Table extends AbstractTable {
             return true;
         } else {
             var tableFields = getFields();
-            var mapConfigFields = fields.stream().collect( toMap( cf -> cf.name, cf -> cf ) );
+            var mapConfigFields = fields.stream().collect( toLinkedHashMap( cf -> cf.name, cf -> cf ) );
 
             var modified = false;
 
             ConfigField prev = null;
 
-            for( var cf : fields ) {
-                if( !tableFields.containsKey( cf.name ) ) {
-                    if( prev == null )
-                        throw new ClickhouseException( "no way to add a column " + cf.name + " to the beginning of a table " + database.getName() + "." + name, 0, null );
-
-                    log.debug( "add field {} after {}", cf.name, prev.name );
-                    if( !dryRun ) {
-                        database.client.execute( buildQuery( cf.getAddSql(), Map.of( "AFTER", prev.name ) ), true, timeout );
-                        refresh();
-                    }
-                    modified = true;
-                }
-                prev = cf;
-            }
-
-            for( var tf : tableFields.values() ) {
-                if( !mapConfigFields.containsKey( tf.name ) ) {
-                    log.debug( "drop field {}", tf.name );
-
-                    if( database.settings.isPreventDestroy() ) {
-                        throw new ClickhouseException( "field '" + tf.name + "' cannot be removed", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_destroy has set" );
-                    }
-
-                    if( !dryRun ) {
-                        database.client.execute( buildQuery( tf.getDropSql(), emptyMap() ), true, timeout );
-                        refresh();
-                    }
-                    modified = true;
-                }
-            }
-
-            for( var cf : fields ) {
-                var tableField = tableFields.get( cf.name );
-                if( tableField != null ) {
-                    if( !cf.typeEquals( tableField.type, tableField.compression_codec ) ) {
-                        log.trace( "modify field {}, type: {} -> {}, codec: {} -> {}",
-                            cf.name,
-                            tableField.type, cf.type.toClickhouseType( cf.length, cf.enumName, cf.lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ),
-                            cf.codec, tableField.compression_codec );
-
-                        if( database.settings.isPreventModify() ) {
-                            throw new ClickhouseException( "field '" + tableField.name + "' cannot be modified", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_modify has set" );
-                        }
-                        if( !dryRun )
-                            database.client.execute( buildQuery( cf.getModifySql(), emptyMap() ), true, timeout );
-                        modified = true;
-                    }
-                }
-            }
+            modified = addFields( fields, dryRun, timeout, tableFields, modified, prev );
+            modified = dropFields( dryRun, timeout, tableFields, mapConfigFields, modified );
+            modified = modifyFields( fields, dryRun, timeout, tableFields, modified );
+            modified = reorderFields( fields, dryRun, timeout, tableFields, modified );
 
             if( !isMemoryEngine() ) {
                 var ttlField = getTtlField( fields );
@@ -243,6 +199,105 @@ public class Table extends AbstractTable {
 
         }
 
+    }
+
+    private boolean reorderFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, boolean modified ) {
+        var tableFieldsOrdered = new ArrayList<>( tableFields.keySet() );
+
+        for( var idx = 0; idx < fields.size(); idx++ ) {
+            var idxField = fields.get( idx );
+            var tableIndex = tableFieldsOrdered.indexOf( idxField.name );
+
+            if( tableIndex != idx ) {
+                if( idx == 0 ) {
+                    log.trace( "move fields {} -> FIRST", idxField.name );
+
+                    checkModified( tableFields.get( idxField.name ) );
+
+                    if( !dryRun )
+                        database.client.execute( buildQuery( idxField.getModifySql(), Map.of( "AFTER_OR_FIRST", "FIRST" ) ), true, timeout );
+                } else {
+                    var afterField = tableFieldsOrdered.get( idx - 1 );
+                    log.trace( "move fields {} -> AFTER {}", idxField.name, afterField );
+
+                    checkModified( tableFields.get( idxField.name ) );
+
+                    if( !dryRun )
+                        database.client.execute( buildQuery( idxField.getModifySql(), Map.of( "AFTER_OR_FIRST", "AFTER " + afterField ) ), true, timeout );
+                }
+                Collections.swap( tableFieldsOrdered, idx, tableIndex );
+
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    private void checkModified( boolean preventModify, String name, String s, String s2 ) {
+        if( preventModify ) {
+            throw new ClickhouseException( "field '" + name + s, HttpURLConnection.HTTP_FORBIDDEN, s2 );
+        }
+    }
+
+    private boolean modifyFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, boolean modified ) {
+        for( var cf : fields ) {
+            var tableField = tableFields.get( cf.name );
+            if( tableField != null ) {
+                if( !cf.typeEquals( tableField.type, tableField.compression_codec ) ) {
+                    log.trace( "modify field {}, type: {} -> {}, codec: {} -> {}",
+                        cf.name,
+                        tableField.type, cf.type.toClickhouseType( cf.length, cf.enumName, cf.lowCardinality.filter( lc -> lc ).map( lc -> LowCardinality.ON ).orElse( LowCardinality.OFF ) ),
+                        cf.codec, tableField.compression_codec );
+
+                    checkModified( tableField );
+                    if( !dryRun )
+                        database.client.execute( buildQuery( cf.getModifySql(), emptyMap() ), true, timeout );
+                    modified = true;
+                }
+            }
+        }
+        return modified;
+    }
+
+    private void checkModified( FieldInfo tableField ) {
+        if( database.settings.isPreventModify() ) {
+            throw new ClickhouseException( "field '" + tableField.name + "' cannot be modified", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_modify has set" );
+        }
+    }
+
+    private boolean dropFields( boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, java.util.LinkedHashMap<String, ConfigField> mapConfigFields, boolean modified ) {
+        for( var tf : new ArrayList<>( tableFields.values() ) ) {
+            if( !mapConfigFields.containsKey( tf.name ) ) {
+                log.debug( "drop field {}", tf.name );
+
+                if( database.settings.isPreventDestroy() ) {
+                    throw new ClickhouseException( "field '" + tf.name + "' cannot be removed", HttpURLConnection.HTTP_FORBIDDEN, "settings prevent_destroy has set" );
+                }
+
+                if( !dryRun ) {
+                    database.client.execute( buildQuery( tf.getDropSql(), emptyMap() ), true, timeout );
+                    tableFields.remove( tf.name );
+                }
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    private boolean addFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, boolean modified, ConfigField prev ) {
+        for( var cf : fields ) {
+            if( !tableFields.containsKey( cf.name ) ) {
+                var order = prev.name != null ? " AFTER " + prev.name : "FIRST";
+                log.debug( "add field {} {}", cf.name, order );
+                if( !dryRun ) {
+                    database.client.execute( buildQuery( cf.getAddSql(), Map.of( "AFTER_OR_FIRST", order ) ), true, timeout );
+                    refresh();
+                }
+                modified = true;
+            }
+            prev = cf;
+        }
+        return modified;
     }
 
     public boolean isMemoryEngine() throws ClickhouseException {
