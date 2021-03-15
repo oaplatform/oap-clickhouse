@@ -34,7 +34,7 @@ import java.util.StringJoiner;
 @ToString
 public class SystemSettings {
     public static final String TABLE_SYSTEM_SETTINGS = "xenoss_system";
-    public static final HashMap<String, Parameter<?>> parameters = new HashMap<String, Parameter<?>>();
+    public static final HashMap<String, AbstractParameter<?>> parameters = new HashMap<String, AbstractParameter<?>>();
 
     private final BooleanParameter preventDestroy = new BooleanParameter( "prevent_destroy", true );
     private final BooleanParameter preventModify = new BooleanParameter( "prevent_modify", true );
@@ -90,12 +90,13 @@ public class SystemSettings {
         BOOLEAN, NUMBER, STRING
     }
 
-    public abstract static class Parameter<T> {
+    @ToString
+    public abstract static class AbstractParameter<T> {
         public final String name;
         public T value;
         public T defaultValue;
 
-        public Parameter( String name, T defaultValue ) {
+        public AbstractParameter( String name, T defaultValue ) {
             this.name = name;
             this.value = this.defaultValue = defaultValue;
 
@@ -109,7 +110,8 @@ public class SystemSettings {
         public abstract String getDefaultValueAsString();
     }
 
-    public static class BooleanParameter extends Parameter<Boolean> {
+    @ToString( callSuper = true )
+    public static class BooleanParameter extends AbstractParameter<Boolean> {
         public BooleanParameter( String name, Boolean defaultValue ) {
             super( name, defaultValue );
         }
