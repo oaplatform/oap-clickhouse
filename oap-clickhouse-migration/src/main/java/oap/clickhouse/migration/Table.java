@@ -139,14 +139,10 @@ public class Table extends AbstractTable {
             var tableFields = getFields();
             var mapConfigFields = fields.stream().collect( toLinkedHashMap( cf -> cf.name, cf -> cf ) );
 
-            var modified = false;
-
-            ConfigField prev = null;
-
-            modified = addFields( fields, dryRun, timeout, tableFields, modified, prev );
-            modified = dropFields( dryRun, timeout, tableFields, mapConfigFields, modified );
-            modified = modifyFields( fields, dryRun, timeout, tableFields, modified );
-            modified = reorderFields( fields, dryRun, timeout, tableFields, modified );
+            var modified = addFields( fields, dryRun, timeout, tableFields );
+            modified |= dropFields( dryRun, timeout, tableFields, mapConfigFields );
+            modified |= modifyFields( fields, dryRun, timeout, tableFields );
+            modified |= reorderFields( fields, dryRun, timeout, tableFields );
 
             if( !isMemoryEngine() ) {
                 var ttlField = getTtlField( fields );
@@ -201,7 +197,9 @@ public class Table extends AbstractTable {
 
     }
 
-    private boolean reorderFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, boolean modified ) {
+    private boolean reorderFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields ) {
+        var modified = false;
+
         var tableFieldsOrdered = new ArrayList<>( tableFields.keySet() );
 
         for( var idx = 0; idx < fields.size(); idx++ ) {
@@ -233,13 +231,9 @@ public class Table extends AbstractTable {
         return modified;
     }
 
-    private void checkModified( boolean preventModify, String name, String s, String s2 ) {
-        if( preventModify ) {
-            throw new ClickhouseException( "field '" + name + s, HttpURLConnection.HTTP_FORBIDDEN, s2 );
-        }
-    }
+    private boolean modifyFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields ) {
+        var modified = false;
 
-    private boolean modifyFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, boolean modified ) {
         for( var cf : fields ) {
             var tableField = tableFields.get( cf.name );
             if( tableField != null ) {
@@ -265,7 +259,9 @@ public class Table extends AbstractTable {
         }
     }
 
-    private boolean dropFields( boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, java.util.LinkedHashMap<String, ConfigField> mapConfigFields, boolean modified ) {
+    private boolean dropFields( boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields,
+                                java.util.LinkedHashMap<String, ConfigField> mapConfigFields ) {
+        var modified = false;
         for( var tf : new ArrayList<>( tableFields.values() ) ) {
             if( !mapConfigFields.containsKey( tf.name ) ) {
                 log.debug( "drop field {}", tf.name );
@@ -284,10 +280,12 @@ public class Table extends AbstractTable {
         return modified;
     }
 
-    private boolean addFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields, boolean modified, ConfigField prev ) {
+    private boolean addFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields ) {
+        ConfigField prev = null;
+        var modified = false;
         for( var cf : fields ) {
             if( !tableFields.containsKey( cf.name ) ) {
-                var order = prev.name != null ? " AFTER " + prev.name : "FIRST";
+                var order = prev != null ? " AFTER " + prev.name : "FIRST";
                 log.debug( "add field {} {}", cf.name, order );
                 if( !dryRun ) {
                     database.client.execute( buildQuery( cf.getAddSql(), Map.of( "AFTER_OR_FIRST", order ) ), true, timeout );
