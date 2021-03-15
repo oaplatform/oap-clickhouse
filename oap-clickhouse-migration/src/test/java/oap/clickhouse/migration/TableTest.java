@@ -370,26 +370,32 @@ public class TableTest extends DatabaseTest {
 
     @Test
     public void testUpgradeReorderFields() {
+        setSettings( "prevent_modify", "false" );
+        reloadDatabase();
+
         var table = database.getTable( "TEST" );
 
         table.upgrade( List.of(
             build( "ID", STRING ).withDefaultValue( "" ),
             build( "ID2", STRING ).withDefaultValue( "" ),
+            build( "ID3", STRING ).withDefaultValue( "" ),
+            build( "ID4", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
 
-        assertThat( table.getFields().keySet() ).containsExactly( "ID", "ID2", "PARTITIONING_DATE" );
-
-        setSettings( "prevent_modify", "false" );
-        reloadDatabase();
+        table.refresh();
+        assertThat( table.getFields().keySet() ).containsExactly( "ID", "ID2", "ID3", "ID4", "PARTITIONING_DATE" );
 
         table.upgrade( List.of(
+            build( "ID4", STRING ).withDefaultValue( "" ),
             build( "ID2", STRING ).withDefaultValue( "" ),
+            build( "ID3", STRING ).withDefaultValue( "" ),
             build( "ID", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(), TABLE_ENGINE, Map.of(), false, Dates.m( 10 ) );
 
-        assertThat( table.getFields().keySet() ).containsExactly( "ID2", "ID", "PARTITIONING_DATE" );
+        table.refresh();
+        assertThat( table.getFields().keySet() ).containsExactly( "ID4", "ID2", "ID3", "ID", "PARTITIONING_DATE" );
     }
-    
+
     private void setSettings( String name, String value ) {
         database.client.execute( "ALTER TABLE " + SystemSettings.TABLE_SYSTEM_SETTINGS + " UPDATE value = '" + value + "' WHERE name = '" + name + "'", true );
         var lines = List.<String>of();

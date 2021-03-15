@@ -24,6 +24,7 @@
 
 package oap.clickhouse.migration;
 
+import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -61,6 +62,15 @@ public class Table extends AbstractTable {
 
     private static ConfigField getTtlField( List<ConfigField> fields ) {
         return Lists.find2( fields, f -> f.ttl > 0 );
+    }
+
+    // TODO Lists.moveItem 
+    private static <E> void moveItem( List<E> list, int sourceIndex, int targetIndex ) {
+        if( sourceIndex <= targetIndex ) {
+            Collections.rotate( list.subList( sourceIndex, targetIndex + 1 ), -1 );
+        } else {
+            Collections.rotate( list.subList( targetIndex, sourceIndex + 1 ), 1 );
+        }
     }
 
     public TtlInfo getTtlField() throws ClickhouseException {
@@ -205,6 +215,7 @@ public class Table extends AbstractTable {
         for( var idx = 0; idx < fields.size(); idx++ ) {
             var idxField = fields.get( idx );
             var tableIndex = tableFieldsOrdered.indexOf( idxField.name );
+            Preconditions.checkArgument( tableIndex >= 0, "Field '" + idxField.name + "' not found, available: " + tableFieldsOrdered );
 
             if( tableIndex != idx ) {
                 if( idx == 0 ) {
@@ -223,7 +234,10 @@ public class Table extends AbstractTable {
                     if( !dryRun )
                         database.client.execute( buildQuery( idxField.getModifySql(), Map.of( "AFTER_OR_FIRST", "AFTER " + afterField ) ), true, timeout );
                 }
-                Collections.swap( tableFieldsOrdered, idx, tableIndex );
+
+
+                moveItem( tableFieldsOrdered, tableIndex, idx );
+                log.trace( "tableFieldsOrdered = {}}", tableFieldsOrdered );
 
                 modified = true;
             }
