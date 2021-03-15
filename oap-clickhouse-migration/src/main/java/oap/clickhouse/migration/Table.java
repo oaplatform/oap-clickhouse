@@ -36,6 +36,7 @@ import oap.util.Lists;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -146,13 +147,10 @@ public class Table extends AbstractTable {
             refresh();
             return true;
         } else {
-            var tableFields = getFields();
-            var mapConfigFields = fields.stream().collect( toLinkedHashMap( cf -> cf.name, cf -> cf ) );
-
-            var modified = addFields( fields, dryRun, timeout, tableFields );
-            modified |= dropFields( dryRun, timeout, tableFields, mapConfigFields );
-            modified |= modifyFields( fields, dryRun, timeout, tableFields );
-            modified |= reorderFields( fields, dryRun, timeout, tableFields );
+            var modified = addFields( fields, dryRun, timeout );
+            modified |= dropFields( fields, dryRun, timeout );
+            modified |= modifyFields( fields, dryRun, timeout );
+            modified |= reorderFields( fields, dryRun, timeout );
 
             if( !isMemoryEngine() ) {
                 var ttlField = getTtlField( fields );
@@ -207,9 +205,10 @@ public class Table extends AbstractTable {
 
     }
 
-    private boolean reorderFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields ) {
+    private boolean reorderFields( List<ConfigField> fields, boolean dryRun, long timeout ) {
         var modified = false;
 
+        var tableFields = getFields();
         var tableFieldsOrdered = new ArrayList<>( tableFields.keySet() );
 
         for( var idx = 0; idx < fields.size(); idx++ ) {
@@ -245,9 +244,10 @@ public class Table extends AbstractTable {
         return modified;
     }
 
-    private boolean modifyFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields ) {
+    private boolean modifyFields( List<ConfigField> fields, boolean dryRun, long timeout ) {
         var modified = false;
 
+        var tableFields = getFields();
         for( var cf : fields ) {
             var tableField = tableFields.get( cf.name );
             if( tableField != null ) {
@@ -273,9 +273,12 @@ public class Table extends AbstractTable {
         }
     }
 
-    private boolean dropFields( boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields,
-                                java.util.LinkedHashMap<String, ConfigField> mapConfigFields ) {
+    private boolean dropFields( List<ConfigField> fields, boolean dryRun, long timeout ) {
         var modified = false;
+
+        var tableFields = getFields();
+        var mapConfigFields = fields.stream().collect( toLinkedHashMap( cf -> cf.name, cf -> cf ) );
+
         for( var tf : new ArrayList<>( tableFields.values() ) ) {
             if( !mapConfigFields.containsKey( tf.name ) ) {
                 log.debug( "drop field {}", tf.name );
@@ -294,11 +297,11 @@ public class Table extends AbstractTable {
         return modified;
     }
 
-    private boolean addFields( List<ConfigField> fields, boolean dryRun, long timeout, java.util.LinkedHashMap<String, FieldInfo> tableFields ) {
+    private boolean addFields( List<ConfigField> fields, boolean dryRun, long timeout ) {
         ConfigField prev = null;
         var modified = false;
         for( var cf : fields ) {
-            if( !tableFields.containsKey( cf.name ) ) {
+            if( !getFields().containsKey( cf.name ) ) {
                 var order = prev != null ? " AFTER " + prev.name : "FIRST";
                 log.debug( "add field {} {}", cf.name, order );
                 if( !dryRun ) {
