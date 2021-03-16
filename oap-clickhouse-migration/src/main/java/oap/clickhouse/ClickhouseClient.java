@@ -55,6 +55,8 @@ public interface ClickhouseClient {
 
     OutputStream put( String table, DataFormat format, long timeout );
 
+    OutputStream put( String table, DataFormat format, Collection<String> fields, long timeout );
+
 
     default void deleteRows( String table, String where, boolean async ) {
         deleteRows( table, where, async, getTimeout() );

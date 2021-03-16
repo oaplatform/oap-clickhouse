@@ -134,10 +134,15 @@ public class DefaultClickhouseClient implements ClickhouseClient {
 
     @Override
     public OutputStream put( String table, DataFormat format, long timeout ) {
+        return put( table, format, List.of(), timeout );
+    }
+
+    @Override
+    public OutputStream put( String table, DataFormat format, Collection<String> fields, long timeout ) {
         log.trace( "put OutputStream into {}", table );
         return execute( new Query( getSubstitute( table, PUT, ( v ) ->
             switch( v ) {
-                case "FIELDS" -> "";
+                case "FIELDS" -> fields.isEmpty() ? "" : Strings.join( ",", fields, "(", ")" );
                 case "FORMAT" -> format.name();
                 default -> null;
             } ), true ), true, timeout ).getOutputStream();
@@ -174,19 +179,14 @@ public class DefaultClickhouseClient implements ClickhouseClient {
 
     @Override
     public ClickhouseProcess putAsync( String table, DataFormat format, long timeout ) {
-        return executeAsync( getSubstitute( table, PUT, ( v ) ->
-            switch( v ) {
-                case "FIELDS" -> "";
-                case "FORMAT" -> format.name();
-                default -> null;
-            } ), true, timeout );
+        return putAsync( table, format, List.of(), timeout );
     }
 
     @Override
     public ClickhouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
         return executeAsync( getSubstitute( table, PUT, ( v ) ->
             switch( v ) {
-                case "FIELDS" -> Strings.join( ",", fields, "(", ")" );
+                case "FIELDS" -> fields.isEmpty() ? "" : Strings.join( ",", fields, "(", ")" );
                 case "FORMAT" -> format.name();
                 default -> null;
             } ), true, timeout );
