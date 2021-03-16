@@ -66,6 +66,11 @@ public class MockClickhouseClient implements ClickhouseClient {
 
     @Override
     public OutputStream put( String table, DataFormat format, long timeout ) {
+        return put( table, format, List.of(), timeout );
+    }
+
+    @Override
+    public OutputStream put( String table, DataFormat format, Collection<String> fields, long timeout ) {
         var baos = new ByteArrayOutputStream();
         puts.add( new Put( table, baos ) );
 
