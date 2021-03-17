@@ -43,6 +43,7 @@ public class ClickhouseFixture extends EnvFixture {
 
     private final String clickhouseHost = Env.get( CLICKHOUSE_HOST, "localhost" );
     private final String databaseName;
+    private String testDatabaseName;
 
     public ClickhouseFixture( String databaseName ) {
         this( METHOD, databaseName );
@@ -51,7 +52,8 @@ public class ClickhouseFixture extends EnvFixture {
     public ClickhouseFixture( Scope scope, String databaseName ) {
         this.scope = scope;
         this.databaseName = databaseName;
-        define( DATABASE_NAME, testDbName( this.databaseName ) );
+        testDatabaseName = testDbName( this.databaseName );
+        define( DATABASE_NAME, testDatabaseName );
         define( CLICKHOUSE_HOST, clickhouseHost );
     }
 
@@ -97,5 +99,9 @@ public class ClickhouseFixture extends EnvFixture {
             var client = new DefaultClickhouseClient( clickhouseHost, 8123, databaseName, Dates.m( 1 ), Dates.m( 1 ) );
             dropDatabases( client );
         }
+    }
+
+    public String getTestDatabaseName() {
+        return testDatabaseName;
     }
 }

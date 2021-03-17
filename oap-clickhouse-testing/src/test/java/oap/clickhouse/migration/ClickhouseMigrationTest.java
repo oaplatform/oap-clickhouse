@@ -36,9 +36,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClickhouseMigrationTest extends Fixtures {
     private final KernelFixture kernel;
+    private final ClickhouseFixture clickhouseFixture;
 
     public ClickhouseMigrationTest() {
-        fixture( new ClickhouseFixture( "aggregator" ) );
+        clickhouseFixture = fixture( new ClickhouseFixture( "aggregator" ) );
         kernel = fixture( new KernelFixture( Resources.filePath( getClass(), "/test-application.conf" ).orElseThrow() ) );
     }
 
@@ -46,7 +47,7 @@ public class ClickhouseMigrationTest extends Fixtures {
     public void testCreateTable() {
         var lines = kernel.service( ClickhouseClient.class ).getLines( "SHOW CREATE TABLE TEST_TABLE" );
         assertThat( lines ).hasSize( 1 );
-        Asserts.assertString( lines.get( 0 ) ).isEqualTo( "CREATE TABLE aggregator___.TEST_TABLE\\n"
+        Asserts.assertString( lines.get( 0 ) ).isEqualTo( "CREATE TABLE " + clickhouseFixture.getTestDatabaseName() + ".TEST_TABLE\\n"
             + "(\\n"
             + "    `UPLOADTIME` DateTime,\\n"
             + "    `DATETIME` DateTime DEFAULT \\'1970-01-01 00:00:00\\',\\n"
