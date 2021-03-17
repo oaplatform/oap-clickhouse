@@ -27,8 +27,8 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>oap-clickhouse-migration</artifactId>
-    <name>oap-clickhouse-migration</name>
+    <artifactId>oap-clickhouse-api</artifactId>
+    <name>oap-clickhouse-api</name>
 
     <parent>
         <groupId>oap</groupId>
@@ -39,27 +39,37 @@
 
     <dependencies>
         <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-clickhouse-api</artifactId>
-            <version>${oap.project.clickhouse.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-logstream</artifactId>
-            <version>${oap.deps.oap.logstream.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>oap</groupId>
-            <artifactId>oap-logstream-data</artifactId>
-            <version>${oap.deps.oap.logstream.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${oap.deps.lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-stdlib</artifactId>
+            <version>${oap.deps.oap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>oap</groupId>
+            <artifactId>oap-tsv</artifactId>
+            <version>${oap.deps.oap.tsv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${oap.deps.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${oap.deps.logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${oap.deps.logback.version}</version>
         </dependency>
     </dependencies>
 </project>
