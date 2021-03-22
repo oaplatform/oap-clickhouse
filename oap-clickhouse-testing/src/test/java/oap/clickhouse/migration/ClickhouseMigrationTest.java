@@ -45,7 +45,7 @@ public class ClickhouseMigrationTest extends Fixtures {
 
     @Test
     public void testCreateTable() {
-        var lines = kernel.service( ClickhouseClient.class ).getLines( "SHOW CREATE TABLE TEST_TABLE" );
+        var lines = kernel.service( "oap-clickhouse", ClickhouseClient.class ).getLines( "SHOW CREATE TABLE TEST_TABLE" );
         assertThat( lines ).hasSize( 1 );
         Asserts.assertString( lines.get( 0 ) ).isEqualTo( "CREATE TABLE " + clickhouseFixture.getTestDatabaseName() + ".TEST_TABLE\\n"
             + "(\\n"
