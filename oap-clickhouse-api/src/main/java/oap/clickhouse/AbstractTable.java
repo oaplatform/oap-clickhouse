@@ -72,18 +72,13 @@ public class AbstractTable {
     }
 
     protected String buildQuery( String query, Map<String, String> params ) {
-        return Strings.substitute( query, ( field ) -> {
+        return Strings.substitute( query, field ->
             switch( field ) {
-                case "DATABASE":
-                    return database.getName();
-                case "TABLE":
-                    return name;
-                case "TABLE_SUFFIX":
-                    return StringUtils.stripToEmpty( System.getProperty( "TABLE_SUFFIX" ) );
-                default:
-                    return params.get( field );
-            }
-        } );
+                case "DATABASE" -> database.getName();
+                case "TABLE" -> name;
+                case "TABLE_SUFFIX" -> StringUtils.stripToEmpty( System.getProperty( "TABLE_SUFFIX" ) );
+                default -> params.get( field );
+            } );
     }
 
     public void drop() throws ClickhouseException {
@@ -114,7 +109,7 @@ public class AbstractTable {
         cache.cleanUp();
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "checkstyle:LocalVariableName" } )
     public LinkedHashMap<String, FieldInfo> getFields() throws ClickhouseException {
         try {
             return ( LinkedHashMap<String, FieldInfo> ) cache.get( "getFields", () -> {
@@ -202,6 +197,7 @@ public class AbstractTable {
 
     @ToString
     @AllArgsConstructor
+    @SuppressWarnings( "checkstyle:MemberName" )
     public static class FieldInfo {
         public final String name;
         public final String type;

@@ -299,6 +299,7 @@ public class TableTest extends DatabaseTest {
     }
 
     @Test
+    @SuppressWarnings( "checkstyle:ModifiedControlVariable" )
     public void testFixAlterIsNotFinished() throws InterruptedException {
         var executorService = Executors.newFixedThreadPool( 2 );
         try {

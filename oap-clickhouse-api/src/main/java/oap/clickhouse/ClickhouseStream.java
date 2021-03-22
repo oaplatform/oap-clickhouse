@@ -51,9 +51,9 @@ public class ClickhouseStream implements Closeable {
     }
 
     @Override
+    @SuppressWarnings( "checkstyle:EmptyBlock" )
     public void close() {
         try( var ignored = getInputStream() ) {
-
         } catch( IOException e ) {
             throw Throwables.propagate( e );
         }

@@ -34,18 +34,17 @@ public interface ClickhouseClient {
         return getLines( query, true, getTimeout() );
     }
 
-    default List<String> getLines( String query, long timeout ) throws ClickhouseException {
-        return getLines( query, true, timeout );
-    }
-
-    long getTimeout();
-
     default List<String> getLines( String query, boolean useDatabase ) throws ClickhouseException {
         return getLines( query, useDatabase, getTimeout() );
     }
 
     List<String> getLines( String query, boolean useDatabase, long timeout ) throws ClickhouseException;
 
+    default List<String> getLines( String query, long timeout ) throws ClickhouseException {
+        return getLines( query, true, timeout );
+    }
+
+    long getTimeout();
 
     default OutputStream put( String table, DataFormat format ) {
         return put( table, format, getTimeout() );

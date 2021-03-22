@@ -184,6 +184,6 @@ public enum FieldType {
             public String apply( String type ) {
                 return type;
             }
-        };
+        }
     }
 }

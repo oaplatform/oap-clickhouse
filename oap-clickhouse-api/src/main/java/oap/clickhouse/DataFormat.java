@@ -27,5 +27,5 @@ package oap.clickhouse;
 public enum DataFormat {
     TabSeparated, TabSeparatedRaw, TabSeparatedWithNames, TabSeparatedWithNamesAndTypes,
     CSV, CSVWithNames, Values, Vertical, JSON, JSONCompact, JSONEachRow, TSKV, Pretty, PrettyCompact,
-    PrettyCompactMonoBlock, PrettyNoEscapes, PrettySpace, RowBinary, Native, Null, XML, CapnProto;
+    PrettyCompactMonoBlock, PrettyNoEscapes, PrettySpace, RowBinary, Native, Null, XML, CapnProto
 }

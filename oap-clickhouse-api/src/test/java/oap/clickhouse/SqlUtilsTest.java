@@ -24,10 +24,6 @@
 
 package oap.clickhouse;
 
-import oap.clickhouse.ConfigField;
-import oap.clickhouse.FieldType;
-import oap.clickhouse.SqlUtils;
-import oap.clickhouse.TableEngine;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -67,7 +63,7 @@ public class SqlUtilsTest {
     }
 
     @Test
-    public void testAddFieldsToInitQuery_length() {
+    public void testAddFieldsToInitQueryLength() {
         var fields = asList(
             new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
             new ConfigField( "AFTER_ID", FieldType.STRING, Optional.of( 5 ), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
@@ -88,7 +84,7 @@ public class SqlUtilsTest {
     }
 
     @Test
-    public void testAddFieldsToInitQuery_enums() {
+    public void testAddFieldsToInitQueryEnums() {
         var fields = asList(
             new ConfigField( "ID", FieldType.STRING, Optional.empty(), Optional.empty(), "", Optional.empty(), Optional.empty(), Optional.of( "" ), 0 ),
             new ConfigField( "AFTER_ID", FieldType.ENUM, Optional.empty(), Optional.empty(), "", Optional.of( "test-dictionary" ), Optional.empty(), Optional.of( "id1" ), 0 ),

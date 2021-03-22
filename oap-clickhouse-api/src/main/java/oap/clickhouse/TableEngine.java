@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings( "checkstyle:MemberName" )
 public class TableEngine {
     public final Engine engine;
     public final ArrayList<String> orderBy = new ArrayList<>();
@@ -38,6 +39,7 @@ public class TableEngine {
         this( engine, null, List.of(), Optional.empty() );
     }
 
+    @SuppressWarnings( "checkstyle:ParameterName" )
     public TableEngine( Engine engine, List<String> partitionBy, List<String> orderBy, Optional<Integer> index_granularity ) {
         this.engine = engine;
         this.partitionBy = partitionBy;

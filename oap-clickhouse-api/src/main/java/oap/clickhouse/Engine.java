@@ -35,7 +35,7 @@ public enum Engine {
     public final boolean supportTtl;
     public final boolean supportIndexGranularity;
 
-    private Engine( boolean supportTtl, boolean supportIndexGranularity ) {
+    Engine( boolean supportTtl, boolean supportIndexGranularity ) {
         this.supportTtl = supportTtl;
         this.supportIndexGranularity = supportIndexGranularity;
     }

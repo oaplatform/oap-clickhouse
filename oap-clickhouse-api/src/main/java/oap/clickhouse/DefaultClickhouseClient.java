@@ -55,6 +55,7 @@ import static oap.util.Dates.m;
 import static oap.util.Dates.s;
 
 @Slf4j
+@SuppressWarnings( "checkstyle:MemberName" )
 public class DefaultClickhouseClient implements ClickhouseClient {
     private static final String PUT = "INSERT INTO ${TABLE} ${FIELDS} FORMAT ${FORMAT}";
     private static final String DROP_PARTITION = "ALTER TABLE ${TABLE} DROP PARTITION '${PARTITION}'";
@@ -84,6 +85,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
             connectTimeout, timeout );
     }
 
+    @SuppressWarnings( "checkstyle:ParameterName" )
     public DefaultClickhouseClient( String host, int port, String database, long maxQuerySize,
                                     long max_ast_elements, long max_expanded_ast_elements, String charsetName,
                                     long connectTimeout, long timeout ) {
@@ -92,6 +94,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
             HttpClient.newBuilder().connectTimeout( Duration.ofMillis( connectTimeout ) ).build() );
     }
 
+    @SuppressWarnings( "checkstyle:ParameterName" )
     public DefaultClickhouseClient( String host, int port, String database, long maxQuerySize,
                                     long max_ast_elements, long max_expanded_ast_elements, String charsetName,
                                     long timeout,
@@ -139,7 +142,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
     @Override
     public OutputStream put( String table, DataFormat format, Collection<String> fields, long timeout ) {
         log.trace( "put OutputStream into {}", table );
-        return execute( new Query( getSubstitute( table, PUT, ( v ) ->
+        return execute( new Query( getSubstitute( table, PUT, v ->
             switch( v ) {
                 case "FIELDS" -> fields.isEmpty() ? "" : Strings.join( ",", fields, "(", ")" );
                 case "FORMAT" -> format.name();
@@ -156,6 +159,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
         if( !async ) waitMutation( where );
     }
 
+    @SuppressWarnings( "checkstyle:parameterAssignment" )
     private void waitMutation( String where ) {
         try {
             where = StringUtils.replace( where, "'", "\\'" );
@@ -183,7 +187,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
 
     @Override
     public ClickhouseProcess putAsync( String table, DataFormat format, Collection<String> fields, long timeout ) {
-        return executeAsync( getSubstitute( table, PUT, ( v ) ->
+        return executeAsync( getSubstitute( table, PUT, v ->
             switch( v ) {
                 case "FIELDS" -> fields.isEmpty() ? "" : Strings.join( ",", fields, "(", ")" );
                 case "FORMAT" -> format.name();
@@ -192,7 +196,19 @@ public class DefaultClickhouseClient implements ClickhouseClient {
     }
 
     @SneakyThrows
+    private ClickhouseStream execute( Query query, String database, long timeout ) throws ClickhouseException {
+        var process = newProcess( query, database, timeout );
+        return process.toStream();
+    }
+
+    @SneakyThrows
+    private ClickhouseStream execute( Query query, boolean useDatabase, long timeout ) {
+        return execute( query, useDatabase ? database : null, timeout );
+    }
+
+    @SneakyThrows
     @Override
+    @SuppressWarnings( "checkstyle:EmptyBlock" )
     public void execute( String sql, boolean useDatabase, long timeout ) {
         log.trace( "Executing SQL \"{}\"...", sql );
         try( var stream = executeAsync( getSubstitute( null, sql, null ), useDatabase, timeout ).toStream();
@@ -269,17 +285,6 @@ public class DefaultClickhouseClient implements ClickhouseClient {
                 case "PORT" -> port;
                 default -> ifElse != null ? ifElse.apply( f ) : null;
             } );
-    }
-
-    @SneakyThrows
-    private ClickhouseStream execute( Query query, boolean useDatabase, long timeout ) {
-        return execute( query, useDatabase ? database : null, timeout );
-    }
-
-    @SneakyThrows
-    private ClickhouseStream execute( Query query, String database, long timeout ) throws ClickhouseException {
-        var process = newProcess( query, database, timeout );
-        return process.toStream();
     }
 
     @Override

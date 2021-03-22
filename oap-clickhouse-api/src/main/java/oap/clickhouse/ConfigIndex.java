@@ -47,24 +47,26 @@ public class ConfigIndex {
         this.granularity = granularity;
     }
 
-    public static String set() {
-        return set( 0 );
-    }
-
-    public static String bloom_filter( double falsePositive ) {
-        return "bloom_filter(" + falsePositive + ")";
-    }
-
-    public static String bloom_filter() {
-        return "bloom_filter()";
-    }
-
     public static String minmax() {
         return "minmax";
     }
 
     public static String set( int maxRows ) {
         return "set(" + maxRows + ")";
+    }
+
+    public static String set() {
+        return set( 0 );
+    }
+
+    @SuppressWarnings( "checkstyle:MethodName" )
+    public static String bloom_filter( double falsePositive ) {
+        return "bloom_filter(" + falsePositive + ")";
+    }
+
+    @SuppressWarnings( "checkstyle:MethodName" )
+    public static String bloom_filter() {
+        return "bloom_filter()";
     }
 
     public static ConfigIndex index( String name, List<String> fields, String type, int granularity ) {

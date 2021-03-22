@@ -63,15 +63,6 @@ public class Table extends AbstractTable {
         return Lists.find2( fields, f -> f.ttl > 0 );
     }
 
-    // TODO Lists.moveItem 
-    private static <E> void moveItem( List<E> list, int sourceIndex, int targetIndex ) {
-        if( sourceIndex <= targetIndex ) {
-            Collections.rotate( list.subList( sourceIndex, targetIndex + 1 ), -1 );
-        } else {
-            Collections.rotate( list.subList( targetIndex, sourceIndex + 1 ), 1 );
-        }
-    }
-
     public TtlInfo getTtlField() throws ClickhouseException {
         try {
             var getTtlField = ( TtlInfo ) cache.get( "getTtlField", () -> {
@@ -85,6 +76,15 @@ public class Table extends AbstractTable {
             return getTtlField == TtlInfo.NULL ? null : getTtlField;
         } catch( ExecutionException e ) {
             throw getException( e );
+        }
+    }
+
+    // TODO Lists.moveItem
+    private static <E> void moveItem( List<E> list, int sourceIndex, int targetIndex ) {
+        if( sourceIndex <= targetIndex ) {
+            Collections.rotate( list.subList( sourceIndex, targetIndex + 1 ), -1 );
+        } else {
+            Collections.rotate( list.subList( targetIndex, sourceIndex + 1 ), 1 );
         }
     }
 

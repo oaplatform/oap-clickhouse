@@ -24,8 +24,6 @@
 
 package oap.clickhouse;
 
-import oap.clickhouse.Database;
-import oap.clickhouse.DefaultClickhouseClient;
 import oap.system.Env;
 import oap.testng.Teamcity;
 import org.apache.commons.lang3.StringUtils;

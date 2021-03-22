@@ -55,18 +55,18 @@ public class DefaultClickhouseClientTest {
     private static final int PORT = 8123;
     private static final int TIMEOUT = 1048576;
 
-    private String DB;
+    private String db;
     private Database database;
     private String initSql;
     private DefaultClickhouseClient clickHouseClient;
 
     @BeforeMethod
     public void beforeMethod() {
-        DB = "db_" + StringUtils.replaceChars( Teamcity.buildPrefix(), ".-", "_" );
+        db = "db_" + StringUtils.replaceChars( Teamcity.buildPrefix(), ".-", "_" );
         System.setProperty( "TABLE_SUFFIX", "_" + RandomStringUtils.randomAlphabetic( 5 ) );
-        database = new DefaultClickhouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT ).getDatabase();
+        database = new DefaultClickhouseClient( HOST, PORT, db, TIMEOUT, TIMEOUT ).getDatabase();
 
-        clickHouseClient = new DefaultClickhouseClient( HOST, PORT, DB, TIMEOUT, TIMEOUT );
+        clickHouseClient = new DefaultClickhouseClient( HOST, PORT, db, TIMEOUT, TIMEOUT );
         clickHouseClient.start();
 
         try {
@@ -85,7 +85,7 @@ public class DefaultClickhouseClientTest {
 
     @Test
     public void testClickhouseNotFound() {
-        assertThatCode( () -> new DefaultClickhouseClient( "unknown host", 9999, DB, TIMEOUT, TIMEOUT ) )
+        assertThatCode( () -> new DefaultClickhouseClient( "unknown host", 9999, db, TIMEOUT, TIMEOUT ) )
             .doesNotThrowAnyException();
     }
 
