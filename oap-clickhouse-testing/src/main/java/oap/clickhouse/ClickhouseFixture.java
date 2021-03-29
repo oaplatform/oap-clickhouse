@@ -33,9 +33,7 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 
-import static oap.testng.Fixture.Scope.CLASS;
 import static oap.testng.Fixture.Scope.METHOD;
-import static oap.testng.Fixture.Scope.SUITE;
 
 public class ClickhouseFixture extends EnvFixture {
     public static final String CLICKHOUSE_HOST = "CLICKHOUSE_HOST";
@@ -43,13 +41,23 @@ public class ClickhouseFixture extends EnvFixture {
 
     private final String clickhouseHost = Env.get( CLICKHOUSE_HOST, "localhost" );
     private final String databaseName;
-    private String testDatabaseName;
+    private final String testDatabaseName;
 
     public ClickhouseFixture( String databaseName ) {
-        this( METHOD, databaseName );
+        this( "", METHOD, databaseName );
+    }
+
+    public ClickhouseFixture( String variablePrefix, String databaseName ) {
+        this( variablePrefix, METHOD, databaseName );
     }
 
     public ClickhouseFixture( Scope scope, String databaseName ) {
+        this( "", scope, databaseName );
+    }
+
+    public ClickhouseFixture( String variablePrefix, Scope scope, String databaseName ) {
+        super( variablePrefix );
+
         this.scope = scope;
         this.databaseName = databaseName;
         testDatabaseName = testDbName( this.databaseName );
@@ -77,28 +85,11 @@ public class ClickhouseFixture extends EnvFixture {
     }
 
     @Override
-    public void afterMethod() {
-        stop( METHOD );
-        super.afterMethod();
-    }
+    protected void after() {
+        var client = new DefaultClickhouseClient( clickhouseHost, 8123, databaseName, Dates.m( 1 ), Dates.m( 1 ) );
+        dropDatabases( client );
 
-    @Override
-    public void afterClass() {
-        stop( CLASS );
-        super.afterClass();
-    }
-
-    @Override
-    public void afterSuite() {
-        stop( SUITE );
-        super.afterSuite();
-    }
-
-    public void stop( Scope scope ) {
-        if( scope == this.scope ) {
-            var client = new DefaultClickhouseClient( clickhouseHost, 8123, databaseName, Dates.m( 1 ), Dates.m( 1 ) );
-            dropDatabases( client );
-        }
+        super.after();
     }
 
     public String getTestDatabaseName() {

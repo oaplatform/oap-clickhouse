@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
-            <artifactId>oap-clickhouse-migration</artifactId>
+            <artifactId>oap-clickhouse-api</artifactId>
             <version>${oap.project.clickhouse.version}</version>
         </dependency>
 
