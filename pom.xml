@@ -49,9 +49,9 @@
     </repositories>
 
     <properties>
-        <oap.project.clickhouse.version>9.0.1</oap.project.clickhouse.version>
+        <oap.project.clickhouse.version>9.0.2</oap.project.clickhouse.version>
 
-        <oap.deps.oap.version>9.0.25</oap.deps.oap.version>
+        <oap.deps.oap.version>9.0.31</oap.deps.oap.version>
         <oap.deps.oap.tsv.version>2.1.5</oap.deps.oap.tsv.version>
         <oap.deps.oap.logstream.version>7.0.0</oap.deps.oap.logstream.version>
         <oap.deps.slf4j.version>1.7.30</oap.deps.slf4j.version>

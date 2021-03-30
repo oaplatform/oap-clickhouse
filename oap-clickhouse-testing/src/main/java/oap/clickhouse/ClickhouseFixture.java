@@ -35,6 +35,11 @@ import java.util.List;
 
 import static oap.testng.Fixture.Scope.METHOD;
 
+/**
+ * ENV:
+ * - CLICKHOUSE_HOST
+ * - DATABASE_NAME
+ */
 public class ClickhouseFixture extends EnvFixture {
     public static final String CLICKHOUSE_HOST = "CLICKHOUSE_HOST";
     public static final String DATABASE_NAME = "DATABASE_NAME";
@@ -44,20 +49,10 @@ public class ClickhouseFixture extends EnvFixture {
     private final String testDatabaseName;
 
     public ClickhouseFixture( String databaseName ) {
-        this( "", METHOD, databaseName );
-    }
-
-    public ClickhouseFixture( String variablePrefix, String databaseName ) {
-        this( variablePrefix, METHOD, databaseName );
+        this( METHOD, databaseName );
     }
 
     public ClickhouseFixture( Scope scope, String databaseName ) {
-        this( "", scope, databaseName );
-    }
-
-    public ClickhouseFixture( String variablePrefix, Scope scope, String databaseName ) {
-        super( variablePrefix );
-
         this.scope = scope;
         this.databaseName = databaseName;
         testDatabaseName = testDbName( this.databaseName );
@@ -82,6 +77,10 @@ public class ClickhouseFixture extends EnvFixture {
 
             client.useDatabase( database ).dropDatabase();
         }
+    }
+
+    public String getClickhouseHost() {
+        return clickhouseHost;
     }
 
     @Override
