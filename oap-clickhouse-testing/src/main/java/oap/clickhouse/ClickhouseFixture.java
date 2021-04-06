@@ -40,7 +40,7 @@ import static oap.testng.Fixture.Scope.METHOD;
  * - CLICKHOUSE_HOST
  * - DATABASE_NAME
  */
-public class ClickhouseFixture extends EnvFixture {
+public class ClickhouseFixture extends EnvFixture<ClickhouseFixture> {
     public static final String CLICKHOUSE_HOST = "CLICKHOUSE_HOST";
     public static final String DATABASE_NAME = "DATABASE_NAME";
 
@@ -65,12 +65,10 @@ public class ClickhouseFixture extends EnvFixture {
     }
 
     public static void dropDatabases( ClickhouseClient client ) {
-        String time = DateTime.now().minusDays( 2 ).toString( "YYYY-MM-dd HH:mm:ss" );
+        var time = DateTime.now().minusDays( 2 ).toString( "YYYY-MM-dd HH:mm:ss" );
         List<String> lines = client
             .useDatabase( "system" )
             .getLines( "SELECT database FROM (SELECT database, MAX(metadata_modification_time) AS time from system.tables GROUP BY database) WHERE time > '" + time + "'" );
-
-        System.out.println( "lines = " + lines );
 
         for( String database : lines ) {
             if( "system".equals( database ) ) continue;
