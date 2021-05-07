@@ -25,7 +25,7 @@
 package oap.clickhouse;
 
 import oap.system.Env;
-import oap.testng.EnvFixture;
+import oap.testng.AbstractEnvFixture;
 import oap.testng.Teamcity;
 import oap.util.Dates;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +40,7 @@ import static oap.testng.Fixture.Scope.METHOD;
  * - CLICKHOUSE_HOST
  * - DATABASE_NAME
  */
-public class ClickhouseFixture extends EnvFixture<ClickhouseFixture> {
+public class ClickhouseFixture extends AbstractEnvFixture<ClickhouseFixture> {
     public static final String CLICKHOUSE_HOST = "CLICKHOUSE_HOST";
     public static final String DATABASE_NAME = "DATABASE_NAME";
 
