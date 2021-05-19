@@ -119,6 +119,57 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
     }
 
     @Test
+    public void testUpgradeTableAndView() {
+        database.upgrade( List.of( new TableInfo(
+            "TEST",
+            List.of(
+                build( "ID", STRING ).withDefaultValue( "" ),
+                build( "ID2", STRING ).withDefaultValue( "" ),
+                build( "ID3", INTEGER ).withDefaultValue( 0 ),
+                build( "SOURCE", STRING ).withDefaultValue( "" ),
+                build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" )
+            ),
+            List.of(),
+            TABLE_ENGINE3,
+            Map.of() ) ), List.of(
+            new ViewInfo( "VIEW", true, true, List.of( Field.of( "ID" ), Field.of( "ID2" ), Field.of( "PARTITIONING_DATE" ) ),
+                List.of( new ViewInfo.AggregatorFunction( null, "C", count ),
+                    new ViewInfo.AggregatorFunction( "ID3", "S", sum ),
+                    new ViewInfo.AggregatorFunction( "SOURCE", "SOURCE", groupArray ) ),
+                Optional.empty(),
+                "TEST", Optional.empty() )
+        ), Dates.m( 10 ) );
+
+        database.upgrade( List.of( new TableInfo(
+            "TEST",
+            List.of(
+                build( "ID", STRING ).withDefaultValue( "" ),
+                build( "ID2", STRING ).withDefaultValue( "" ),
+                build( "ID3", INTEGER ).withDefaultValue( 0 ),
+                build( "ID4", STRING ).withDefaultValue( "" ),
+                build( "SOURCE", STRING ).withDefaultValue( "" ),
+                build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" )
+            ),
+            List.of(),
+            TABLE_ENGINE3,
+            Map.of() ) ), List.of(
+            new ViewInfo( "VIEW", true, true, List.of( Field.of( "ID" ), Field.of( "ID2" ), Field.of( "ID4" ), Field.of( "PARTITIONING_DATE" ) ),
+                List.of( new ViewInfo.AggregatorFunction( null, "C", count ),
+                    new ViewInfo.AggregatorFunction( "ID3", "S", sum ),
+                    new ViewInfo.AggregatorFunction( "SOURCE", "SOURCE", groupArray ) ),
+                Optional.empty(),
+                "TEST", Optional.empty() )
+        ), Dates.m( 10 ) );
+
+        database.client.execute( "INSERT INTO TEST VALUES ('id', 'id2', 3, 'id4', 'sc1', '2019-11-11'), "
+            + "('id', 'id2', 4, 'id4', 'sc2', '2019-11-11'), "
+            + "('id', 'id2', 5, 'id4', 'sc3', '2019-11-11')", true );
+
+        assertThat( database.client.getLines( "SELECT * FROM VIEW" ) )
+            .isEqualTo( List.of( "id\tid2\tid4\t2019-11-11\t3\t12\t['sc1','sc2','sc3']" ) );
+    }
+    
+    @Test
     public void testViewByDateTimeFunction() {
         var tableEngine = new TableEngine( MergeTree, List.of( "PARTITIONING_DATE" ), List.of( "DATETIME", "SOURCE" ), Optional.empty() );
         database.upgrade( List.of( new TableInfo(

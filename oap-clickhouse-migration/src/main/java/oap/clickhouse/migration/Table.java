@@ -36,7 +36,6 @@ import oap.util.Lists;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -206,8 +205,9 @@ public class Table extends AbstractTable {
     }
 
     private boolean reorderFields( List<ConfigField> fields, boolean dryRun, long timeout ) {
-        var modified = false;
+        if( dryRun ) return false;
 
+        var modified = false;
         var tableFields = getFields();
         var tableFieldsOrdered = new ArrayList<>( tableFields.keySet() );
 
