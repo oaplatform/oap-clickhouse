@@ -204,8 +204,9 @@ public class Table extends AbstractTable {
     }
 
     private boolean reorderFields( List<ConfigField> fields, boolean dryRun, long timeout ) {
-        var modified = false;
+        if( dryRun ) return false;
 
+        var modified = false;
         var tableFields = getFields();
         var tableFieldsOrdered = new ArrayList<>( tableFields.keySet() );
 
