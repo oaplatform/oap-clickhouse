@@ -175,6 +175,7 @@ public class DefaultClickhouseClient implements ClickhouseClient {
                 Thread.sleep( 500 );
             } while( true );
         } catch( InterruptedException e ) {
+            Thread.currentThread().interrupt();
             throw new ClickhouseException( e );
         }
 

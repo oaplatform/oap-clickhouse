@@ -32,6 +32,7 @@ import oap.util.Lists;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @ToString
 @EqualsAndHashCode
@@ -40,9 +41,9 @@ public class Database {
     public final ClickhouseClient client;
     public final String database;
     final SystemSettings settings;
-    private final ConcurrentHashMap<String, Table> tables = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, View> views = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Dictionary> dictionaries = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Table> tables = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, View> views = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Dictionary> dictionaries = new ConcurrentHashMap<>();
 
     public Database( String database, ClickhouseClient client, SystemSettings settings ) {
         this.database = database;
