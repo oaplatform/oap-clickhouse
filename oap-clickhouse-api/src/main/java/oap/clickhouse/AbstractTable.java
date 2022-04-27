@@ -101,7 +101,8 @@ public class AbstractTable {
 
     protected ClickhouseException getException( ExecutionException e ) {
         if( e.getCause() instanceof ClickhouseException ) return ( ClickhouseException ) e.getCause();
-        return new ClickhouseException( e.getCause() );
+        if( e.getCause() != null ) return new ClickhouseException( e.getCause() );
+        return new ClickhouseException( e );
     }
 
     public void refresh() {
