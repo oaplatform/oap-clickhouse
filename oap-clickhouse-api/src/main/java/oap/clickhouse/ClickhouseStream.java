@@ -43,7 +43,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 public class ClickhouseStream implements Closeable {
     private final OutputStream outputStream;
     private final HttpURLConnection http;
-    private InputStream inputStream = null;
+    private volatile InputStream inputStream = null;
 
     public ClickhouseStream( OutputStream os, HttpURLConnection http ) {
         this.outputStream = os;
