@@ -76,7 +76,8 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     public int chunkSize = 1024 * 1024;
     public long timeout;
 
-    private String user = null;
+    public String user = null;
+    public String password = null;
     private SystemSettings settings;
 
     public DefaultClickHouseClient( String host, int port, String database ) {
@@ -285,11 +286,11 @@ public class DefaultClickHouseClient implements ClickHouseClient {
     }
 
     private ClickhouseProcess newProcess( Query query, String database, long timeout ) {
-        return new ClickhouseProcessHttp( query, database, user, timeout );
+        return new ClickhouseProcessHttp( query, database, user, password, timeout );
     }
 
     private ClickhouseProcess newProcess( Query query, boolean useDatabase, long timeout ) {
-        return new ClickhouseProcessHttp( query, useDatabase, user, timeout );
+        return new ClickhouseProcessHttp( query, useDatabase, user, password, timeout );
     }
 
     @ToString
@@ -332,16 +333,18 @@ public class DefaultClickHouseClient implements ClickHouseClient {
         private final Query query;
         private final String database;
         private final String user;
+        private final String password;
         private final long timeout;
 
-        public ClickhouseProcessHttp( Query query, boolean useDatabase, String user, long timeout ) {
-            this( query, useDatabase ? DefaultClickHouseClient.this.database : null, user, timeout );
+        public ClickhouseProcessHttp( Query query, boolean useDatabase, String user, String password, long timeout ) {
+            this( query, useDatabase ? DefaultClickHouseClient.this.database : null, user, password, timeout );
         }
 
-        public ClickhouseProcessHttp( Query query, String database, String user, long timeout ) {
+        public ClickhouseProcessHttp( Query query, String database, String user, String password, long timeout ) {
             this.query = query;
             this.database = database;
             this.user = user;
+            this.password = password;
             this.timeout = timeout;
         }
 
@@ -356,6 +359,7 @@ public class DefaultClickHouseClient implements ClickHouseClient {
                 if( max_expanded_ast_elements > 0 )
                     uriBuilder.addParameter( "max_expanded_ast_elements", String.valueOf( max_expanded_ast_elements ) );
                 if( user != null ) uriBuilder.addParameter( "user", user );
+                if( password != null ) uriBuilder.addParameter( "password", password );
                 var uri = uriBuilder.build();
 
                 log.trace( "clickhouse uri = {}, chunk size = {}, connection timeout = {}",
