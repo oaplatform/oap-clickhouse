@@ -55,7 +55,7 @@
         <oap.deps.oap.tsv.version>3.0.1</oap.deps.oap.tsv.version>
         <oap.deps.oap.logstream.version>8.0.1</oap.deps.oap.logstream.version>
         <oap.deps.slf4j.version>1.7.30</oap.deps.slf4j.version>
-        <oap.deps.lombok.version>1.18.20</oap.deps.lombok.version>
+        <oap.deps.lombok.version>1.18.24</oap.deps.lombok.version>
         <oap.deps.logback.version>1.2.3</oap.deps.logback.version>
     </properties>
 </project>
