@@ -51,7 +51,7 @@
     <properties>
         <oap.project.clickhouse.version>9.1.1</oap.project.clickhouse.version>
 
-        <oap.deps.oap.version>9.9.0</oap.deps.oap.version>
+        <oap.deps.oap.version>17.11.0.0-shade_okhttp-1235</oap.deps.oap.version>
         <oap.deps.oap.tsv.version>3.0.1</oap.deps.oap.tsv.version>
         <oap.deps.oap.logstream.version>8.0.1</oap.deps.oap.logstream.version>
         <oap.deps.slf4j.version>1.7.30</oap.deps.slf4j.version>
