@@ -45,8 +45,8 @@ import static oap.clickhouse.migration.ConfigField.buildEnum;
 import static oap.clickhouse.migration.ConfigField.buildFixedString;
 import static oap.clickhouse.migration.ConfigIndex.index;
 import static oap.clickhouse.migration.ConfigIndex.set;
-import static oap.clickhouse.migration.Engine.Memory;
-import static oap.clickhouse.migration.Engine.MergeTree;
+import static oap.clickhouse.migration.EngineType.Memory;
+import static oap.clickhouse.migration.EngineType.MergeTree;
 import static oap.clickhouse.migration.FieldType.DATE;
 import static oap.clickhouse.migration.FieldType.DATETIME;
 import static oap.clickhouse.migration.FieldType.STRING;
@@ -62,8 +62,8 @@ import static org.testng.Assert.assertTrue;
  * Created by igor.petrenko on 28.02.2018.
  */
 public class TableTest extends DatabaseTest {
-    public static final TableEngine TABLE_ENGINE_MEMORY = new TableEngine( Memory );
-    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
+    public static final TableEngine TABLE_ENGINE_MEMORY = new TableEngine(  new Engine( Memory ) );
+    private static final TableEngine TABLE_ENGINE = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
     @Test
     public void testUpgrade_Init() {
@@ -509,7 +509,7 @@ public class TableTest extends DatabaseTest {
 
         assertTrue( table.upgrade( List.of( build( "ID", STRING ).withDefaultValue( "" ),
             build( "PARTITIONING_DATE", DATE ).withDefaultValue( "2019-09-23" ) ), List.of(),
-            new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.of( 1024 ) ), Map.of(), false, Dates.m( 10 ) ) );
+            new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.of( 1024 ) ), Map.of(), false, Dates.m( 10 ) ) );
         assertThat( table.getIndexGranularity() ).isEqualTo( 1024 );
 
 
