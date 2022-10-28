@@ -33,8 +33,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static oap.clickhouse.migration.ConfigField.build;
-import static oap.clickhouse.migration.Engine.Memory;
-import static oap.clickhouse.migration.Engine.MergeTree;
+import static oap.clickhouse.migration.EngineType.Memory;
+import static oap.clickhouse.migration.EngineType.MergeTree;
 import static oap.clickhouse.migration.FieldType.DATE;
 import static oap.clickhouse.migration.FieldType.DATETIME;
 import static oap.clickhouse.migration.FieldType.INTEGER;
@@ -54,8 +54,8 @@ import static org.testng.Assert.assertTrue;
  * Created by igor.petrenko on 2019-10-28.
  */
 public class ClickhouseDatabaseTest extends DatabaseTest {
-    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
-    private static final TableEngine TABLE_ENGINE3 = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "ID", "ID2", "ID3", "SOURCE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE3 = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "ID", "ID2", "ID3", "SOURCE" ), Optional.empty() );
 
     @Test
     public void testUpgradeInitTable() {
@@ -118,12 +118,12 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
         assertThat( infoTable.dependenciesTable ).isEqualTo( List.of( "VIEW" ) );
 
         var infoView = database.getTable( "VIEW" ).getInfo();
-        assertThat( infoView.engine ).isEqualTo( Engine.MaterializedView );
+        assertThat( infoView.engine ).isEqualTo( EngineType.MaterializedView );
     }
 
     @Test
     public void testViewByDateTimeFunction() {
-        var tableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
+        var tableEngine = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
         database.upgrade( List.of( new TableInfo(
             "TEST",
             List.of(
@@ -150,7 +150,7 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
 
     @Test
     public void testViewWithCustomPK() {
-        var tableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
+        var tableEngine = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
         database.upgrade( List.of( new TableInfo(
             "TEST",
             List.of(
@@ -174,7 +174,7 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
 
     @Test
     public void testViewWithWhere() {
-        var tableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
+        var tableEngine = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "DATETIME", "SOURCE" ), Optional.empty() );
         database.upgrade( List.of( new TableInfo(
             "TEST",
             List.of(
@@ -198,8 +198,8 @@ public class ClickhouseDatabaseTest extends DatabaseTest {
 
     @Test
     public void testMemoryTableToViewToTable() {
-        var fromTableEngine = new TableEngine( Memory );
-        var toTableEngine = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "DATETIME" ), Optional.empty() );
+        var fromTableEngine = new TableEngine( new Engine( Memory ) );
+        var toTableEngine = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "DATETIME" ), Optional.empty() );
 
         database.upgrade( List.of(
             new TableInfo(

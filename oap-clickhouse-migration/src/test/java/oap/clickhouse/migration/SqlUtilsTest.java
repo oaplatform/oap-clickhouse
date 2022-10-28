@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
-import static oap.clickhouse.migration.Engine.MergeTree;
+import static oap.clickhouse.migration.EngineType.MergeTree;
 import static oap.testng.Asserts.assertString;
 
 public class SqlUtilsTest {
@@ -47,7 +47,7 @@ public class SqlUtilsTest {
             new ConfigField( "LC", FieldType.STRING, Optional.empty(), Optional.of( true ), Optional.empty(), Optional.empty(), Optional.of( "V" ), 0 )
         );
 
-        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "ID" ), Optional.empty() ), fields, List.of() );
+        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "ID" ), Optional.empty() ), fields, List.of() );
 
         assertString( sql ).isEqualTo( """
             CREATE TABLE ${TABLE}${THREAD_IDX} (
@@ -71,7 +71,7 @@ public class SqlUtilsTest {
             new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 )
         );
 
-        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "ID" ), Optional.empty() ), fields, List.of() );
+        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "ID" ), Optional.empty() ), fields, List.of() );
 
         assertString( sql ).isEqualTo( """
             CREATE TABLE ${TABLE}${THREAD_IDX} (
@@ -91,7 +91,7 @@ public class SqlUtilsTest {
             new ConfigField( "PARTITIONING_DATE", FieldType.DATE, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of( "2019-09-23" ), 0 )
         );
 
-        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "ID" ), Optional.empty() ), fields, List.of() );
+        var sql = SqlUtils.addFieldsIndexesToInitQuery( new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "ID" ), Optional.empty() ), fields, List.of() );
 
         assertString( sql ).isEqualTo( """
             CREATE TABLE ${TABLE}${THREAD_IDX} (

@@ -25,6 +25,7 @@
 package oap.clickhouse;
 
 import oap.clickhouse.migration.Database;
+import oap.clickhouse.migration.Engine;
 import oap.clickhouse.migration.TableEngine;
 import oap.clickhouse.migration.TableInfo;
 import oap.system.Env;
@@ -43,7 +44,7 @@ import java.util.Optional;
 
 import static oap.clickhouse.migration.ConfigField.build;
 import static oap.clickhouse.migration.ConfigField.buildFixedArrayString;
-import static oap.clickhouse.migration.Engine.MergeTree;
+import static oap.clickhouse.migration.EngineType.MergeTree;
 import static oap.clickhouse.migration.FieldType.DATE;
 import static oap.clickhouse.migration.FieldType.STRING;
 import static oap.testng.Asserts.assertString;
@@ -55,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Created by igor.petrenko on 28.02.2018.
  */
 public class DefaultClickHouseClientTest {
-    private static final TableEngine TABLE_ENGINE = new TableEngine( MergeTree, "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
+    private static final TableEngine TABLE_ENGINE = new TableEngine( new Engine( MergeTree ), "PARTITIONING_DATE", List.of( "PARTITIONING_DATE" ), Optional.empty() );
 
     private static final String HOST = Env.get( "CLICKHOUSE_HOST", "localhost" );
     private static final int PORT = 8123;

@@ -174,7 +174,7 @@ public class AbstractTable {
                 Tsv.split( lines.get( 0 ), list );
                 Preconditions.checkArgument( list.size() == 6 );
 
-                var engine = Engine.valueOf( list.get( 1 ) );
+                var engine = EngineType.valueOf( list.get( 1 ) );
                 var primaryKeyTsv = list.get( 3 );
                 var dependenciesTable = list.get( 4 );
                 dependenciesTable = dependenciesTable.substring( 1, dependenciesTable.length() - 1 );
@@ -194,7 +194,7 @@ public class AbstractTable {
     @AllArgsConstructor
     public static class Info {
         public final String name;
-        public final Engine engine;
+        public final EngineType engine;
         public final String partitionKey;
         public final List<String> primaryKey;
         public final List<String> dependenciesTable;

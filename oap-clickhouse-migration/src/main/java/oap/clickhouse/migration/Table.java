@@ -119,7 +119,7 @@ public class Table extends AbstractTable {
                 log.debug( "Table {}.{} doesn't exist", database.getName(), name );
                 var createTableQuery = addFieldsIndexesToInitQuery( tableEngine, fields, indexes ).trim();
 
-                if( tableEngine.engine.supportTtl ) {
+                if( tableEngine.engine.type.supportTtl ) {
                     var ttlField = getTtlField( fields );
                     if( ttlField != null ) {
                         if( createTableQuery.endsWith( ";" ) )

@@ -37,6 +37,9 @@ public class TableEngine {
     public String partitionBy;
     public Optional<Integer> index_granularity;
 
+    public TableEngine( String engine ) {
+        this( Engine.fromString( engine ) );
+    }
     public TableEngine( Engine engine ) {
         this( engine, null, List.of(), Optional.empty() );
     }
@@ -53,7 +56,7 @@ public class TableEngine {
         var ret = "Engine = " + engine;
         if( partitionBy != null ) ret += " PARTITION BY (" + partitionBy + ")";
         if( !orderBy.isEmpty() ) ret += " ORDER BY (" + String.join( ", ", orderBy ) + ")";
-        if( engine.supportIndexGranularity && index_granularity != null && index_granularity.isPresent() )
+        if( engine.type.supportIndexGranularity && index_granularity != null && index_granularity.isPresent() )
             ret += " SETTINGS index_granularity = " + index_granularity.get();
         return ret;
     }
